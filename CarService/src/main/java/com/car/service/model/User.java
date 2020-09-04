@@ -1,12 +1,12 @@
 package com.car.service.model;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.MongoId;
 
-@Document(collection = "User")
+@Document(collection = "Users")
 public class User {
-  @MongoId
-  private long id;
+  @Id
+  private int id;
   private String name;
   private String type;
   private String email;
@@ -17,7 +17,7 @@ public class User {
     return id;
   }
 
-  public void setId(long id) {
+  public void setId(int id) {
     this.id = id;
   }
 

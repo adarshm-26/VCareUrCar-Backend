@@ -9,13 +9,13 @@ import com.car.service.model.User;
 import com.car.service.repository.UserRepository;
 
 @Service
-public class UserService {
+public class UserServices {
 
   @Autowired
   private UserRepository userRepository;
 
   // Save a User in the database
-  public User saveUser(User user) {
+  public User putUser(User user) {
     return userRepository.save(user);
   }
 
@@ -25,7 +25,12 @@ public class UserService {
   }
 
   // Fetch All
-  public List<User> allUsers() {
+  public List<User> getAllUsers() {
     return userRepository.findAll();
+  }
+
+  // Remove a User from database
+  public void removeUser(User user) {
+    userRepository.delete(user);
   }
 }
