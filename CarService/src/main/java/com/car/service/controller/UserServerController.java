@@ -1,31 +1,24 @@
 package com.car.service.controller;
 
+import com.car.service.service.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.car.service.model.User;
-import com.car.service.service.UserService;
-
-import java.util.List;
-
 
 @RestController
-public class CarServiceController {
+public class UserServerController {
 
   @Autowired
-  private UserService uservice;
+  private UserServices services;
 
   @PostMapping("/register")
   public String register(@RequestBody User user) throws Exception {
 
     String email = user.getEmail();
     if (email != null && !"".equals(email)) {
-      User obj = null;
-      obj = uservice.getUserByEmail(email);
+      User obj = services.getUserByEmail(email);
       if (obj != null) {
         throw new Exception("User already exists with " + email);
       }
@@ -33,7 +26,7 @@ public class CarServiceController {
 
     // TODO -> Add validation of other fields
 
-    User obj = uservice.saveUser(user);
+    User obj = services.putUser(user);
     if (obj != null)
       return "registration success id: " + user.getId();
     else
@@ -49,7 +42,7 @@ public class CarServiceController {
     // TODO -> Change string return to Status Codes ??
 
     if (email != null && password != null) {
-      User userObj = uservice.getUserByEmail(email);
+      User userObj = services.getUserByEmail(email);
       if (userObj.getPassword().compareTo(password) == 0)
         return "Success";
       else

@@ -1,0 +1,10 @@
+# Registration Server config
+eureka:
+  instance:
+    hostname: localhost
+  client:  # Leave this empty for registration server
+    registerWithEureka: false
+    fetchRegistry: false
+
+server:
+  port: 1111  # Registration server port
