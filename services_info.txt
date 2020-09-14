@@ -1,0 +1,58 @@
+Job:
+	id
+	carId
+	userId
+	status
+	bookingDate
+	AcceptedDate
+	paymentReceivedDate
+	appointedDate
+	SupervisorId
+	technicianId;
+
+
+common gate way/auth server: 
+	localhost:1112
+user-service:
+	localhost:1113/
+	POST	user/register
+	POST	user/login
+	POST	user/bookAppointment/{userId}/carservice	
+		{
+			"id":__
+			"carId":__,
+			"discount":__,
+			"typeOfService":__
+		}
+		note: id,userId,status,bookingdate will be added to the database
+
+Appointment-Service/jobs:
+	localhost:1114/
+	GET 	appointment/getAllAppointments
+	GET 	appointment/getAllTechnicians
+	POST	appointment/addJobToTech/{supId}/{techId}
+		{
+			"id":__
+		}
+
+		note:supervisorId,technicianId,acceptedDate,status will be updated 
+
+	POST	appointment/estimating/cost/{jobId}
+		
+		note:execute only when technician complete the job
+		note:default:12000,will be change acc to service
+Technician-Service
+	localhost:1115/
+	GET	jobs/getmyjob/{techId}
+	POST	jobs/update/job
+		{
+			"id":__
+		}
+
+		note:appointedDate and completion status will be updated  
+
+service-registry:
+	localhost:1111
+
+
+//TODO--payment-service
