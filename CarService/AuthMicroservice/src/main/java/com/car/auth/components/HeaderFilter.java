@@ -25,12 +25,9 @@ public class HeaderFilter extends ZuulFilter {
   @Autowired
   JwtUserDetailsService userDetailsService;
 
-  private static Logger logger = LoggerFactory.getLogger(HeaderFilter.class);
-
   @Override
   public boolean shouldFilter() {
     String uri = RequestContext.getCurrentContext().getRequest().getRequestURI();
-    logger.info("checking filter necess");
     if (uri.equalsIgnoreCase("/authenticate")) return false;
     else if (uri.equalsIgnoreCase("/register")) return false;
     else return true;
@@ -50,7 +47,6 @@ public class HeaderFilter extends ZuulFilter {
   public Object run() throws ZuulException {
     HttpServletRequest request = RequestContext.getCurrentContext().getRequest();
     String token = request.getHeader("Authorization");
-    logger.info("running preFilter");
     if (token == null || !token.startsWith("Bearer ")) {
       RequestContext.getCurrentContext().setSendZuulResponse(false);
     }
@@ -66,7 +62,6 @@ public class HeaderFilter extends ZuulFilter {
       else {
         RequestContext.getCurrentContext().setSendZuulResponse(false);
       }
-      logger.info(request.getAttribute("role").toString());
     }
     return null;
   }

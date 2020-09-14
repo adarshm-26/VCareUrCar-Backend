@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/appointment")
 public class AppointmentController {
 	@Autowired
 	private AppointmentService service;

@@ -13,8 +13,6 @@ import org.springframework.web.client.RestTemplate;
 public class AppointmentServiceApplication {
 	
 	public static void main(String[] args) {
-
-		System.setProperty("spring.config.name", "appointment-service");
 		SpringApplication.run(AppointmentServiceApplication.class, args);
 	}
 	@Bean
