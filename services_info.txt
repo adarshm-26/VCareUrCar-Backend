@@ -1,36 +1,171 @@
 Job:
-	id
-	carId
-	userId
-	status
-	bookingDate
-	AcceptedDate
-	paymentReceivedDate
-	appointedDate
-	SupervisorId
-	technicianId;
-	isServiceCompleted
-	discount
-	typeOfService
+	id			int
+	carId			int
+	ownerId			int
+	status			string
+	bookingDate		date
+	acceptedDate		date
+	deadlineDate		date
+	paymentReceivedDate	date
+	appointedDate		date
+	supervisorId		int
+	technicianId		int
+	isServiceCompleted	boolean
+	discount		float
+	services		list<service>	*[a service object is also needed]
 
+User:
+	id			int
+	name			string
+	type			string
+	email			string
+	phone			string
+	password		string
+
+Car:
+	id			int
+	model			string
+	ownerId 		int		*[a customer type user's ID]
+	**other fields as required
+
+Service: *[Possible structure for service object]
+	name			string
+	cost			float
+	completedDate		date
+	verifiedDate		date
 
 common gate way/auth server: 
 	localhost:1112
+	1. POST	uri: /authenticate	
+		body: 
+		{
+			"username": __,
+			"password": __		
+		}
+		description: Get authentication token
+		permissions: All
+
 user-service:
 	localhost:1113/
-	POST	user/register
-	POST	user/login
-	POST	user/bookAppointment/{userId}/carservice	
-		{
-			"id":__
-			"carId":__,
-			"discount":__,
-			"typeOfService":__
-		}
-		note: id,userId,status,bookingdate will be added to the database
+	1. POST	uri: /user/register
+		body: *User object
+		description: Save new user object in User repository
+		permissions: customer, admin
+		#NOTE: customer can add only themselves once
+			admin once created, will create
+			supervisors and technicians but not users, 
+			supervisors and technicians cannot add themselves
 
-Appointment-Service/jobs:
+	2. GET	uri: /user/{userId}
+		description: Get the user details of user having given userID
+		permissions: admin
+	
+	3. GET	uri: /user/me
+		description: Get the user details of user making this request
+		permissions: All
+		#NOTE: this uri will not be made as a separate
+			endpoint, instead the uri above this,
+			numbered as "2." will handle this request
+			also
+
+	4. GET	uri: /user/all?pageNo={pageNo}
+		description: Get list of all users currently in the database
+		permissions: admin
+		#NOTE: this request will put a lot of load on the server
+			hence, the response will have to be paginated(sent
+			in pages), [no need to do this now, i think]
+
+car-service:
+	localhost:111?
+	1. POST	uri: /cars/add
+		body: *Car object
+		description: Save car details in Car repository
+		permissions: customer, admin
+	
+	2. POST uri: /cars/remove
+		body: 
+		{
+			"id": __		
+		}
+		description: Remove car details from Car repository
+		permissions: customer, admin
+		#NOTE: cars can only have the ownerId of a valid
+			customer type user, here admin is given permission 
+			to add/remove cars on a customer's behalf.
+			other than customer no one can have car
+			details associated with them.
+	
+	3. GET	uri: /cars/{userId}/{carId}
+		description: Get the specified car details of the
+				specified user, also includes links
+				of jobs performed on the car
+		permissions: admin
+
+	4. GET	uri: /cars/my/{carId}
+		#NOTE: same as above request but for customers only
+
+	5. GET	uri: /cars/{userId}
+		description: Get list of cars of the specified user
+		permissions: admin
+	
+	6. GET	uri: /cars/my
+		#NOTE: same as above request but for customers only
+
+#*******************using "jobs" instead of "appointment" for ease of understanding********************
+jobs-service:
 	localhost:1114/
+	1. POST uri: /jobs/book
+		body: *Job object with following fields only
+		{
+			"id": __,
+			"carId": __,
+			"ownerId": __,
+			"status": __,
+			"bookingDate": __,
+			"services": [
+				...services
+			]
+		}
+		description: book an servicing appointment
+		permissions: customer, admin
+	
+	2. POST	uri: /jobs/schedule
+		body:
+		{
+			"id": __,
+			"supervisorId": __,
+			"acceptedDate": __,
+			"deadlineDate": __,
+			"technicianId": __,
+			"status": __,
+		}
+		description: update the job with these details
+		permissions: supervisor, admin
+
+	3. POST uri: /jobs/service
+		body:
+		{
+			"id": __,
+			"appointedDate": __,
+			"status": __,
+			"services": [
+				{
+					"name": __,
+					"completedDate": __,
+				},
+				....
+			]
+		}
+		description: update the job with these details
+		permissions: technician, admin
+		#NOTE: when a technician makes this request for
+			first time, only then the "appointedDate"
+			"status" are updated, all other time only
+			the services list's "completedDate" field
+			is updated
+	
+	***feeling sleepy, will update others tomorrow morning***
+
 	GET 	appointment/getAllAppointments
 	GET 	appointment/getAllTechnicians
 	POST	appointment/addJobToTech/{supId}/{techId}
