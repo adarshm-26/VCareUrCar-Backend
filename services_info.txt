@@ -9,6 +9,9 @@ Job:
 	appointedDate
 	SupervisorId
 	technicianId;
+	isServiceCompleted
+	discount
+	typeOfService
 
 
 common gate way/auth server: 
@@ -41,15 +44,14 @@ Appointment-Service/jobs:
 		
 		note:execute only when technician complete the job
 		note:default:12000,will be change acc to service
-Technician-Service
-	localhost:1115/
-	GET	jobs/getmyjob/{techId}
-	POST	jobs/update/job
+
+	//technician-service
+	
+	GET	appointment/getMyJob/{techId}
+	POST	appointment/assignToJob
 		{
 			"id":__
 		}
-
-		note:appointedDate and completion status will be updated  
 
 service-registry:
 	localhost:1111
