@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
+
 public class AppointmentController {
 	@Autowired
 	private AppointmentService service;
@@ -65,10 +66,10 @@ public class AppointmentController {
 		job=service.costUpdating(job);
 		if(job.getDiscount()!=0) {
 			BigDecimal diff;
-			BigDecimal totalCost = new BigDecimal(String.valueOf(job.getEstimatedCost()));
-			BigDecimal discount = new BigDecimal(job.getDiscount());
+			BigDecimal totalCost = job.getEstimatedCost();
+			BigDecimal discount = new BigDecimal(String.valueOf(job.getDiscount()));
 			diff=totalCost.subtract(discount);
-			return new BigDecimal(String.valueOf(diff));
+			return diff;
 		}
 		return job.getEstimatedCost();
 	}

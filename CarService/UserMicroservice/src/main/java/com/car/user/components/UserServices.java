@@ -55,7 +55,7 @@ public class UserServices {
     request.setBookingDate(date);
     request.setStatus(false);
     Job appointment=null;
-    appointment=template.postForObject( "http://APPOINTMENT-SERVICE/appointment/bookAppointment", request, Job.class);
+    appointment=template.postForObject( "http://APPOINTMENT-SERVICE/bookAppointment", request, Job.class);
     if(appointment==null)
       return new ResponseEntity<>("failed to register",HttpStatus.BAD_REQUEST);
     return new ResponseEntity<>("success", HttpStatus.OK);

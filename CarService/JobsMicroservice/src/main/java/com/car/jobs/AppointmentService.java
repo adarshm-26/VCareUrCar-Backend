@@ -40,7 +40,7 @@ public class AppointmentService {
 		return jobrepo.save(job);
 	}
 	public List<Job> getJobs(boolean status){
-		return jobrepo.findAllByStatus(true);
+		return jobrepo.findAllByStatus(status);
 
 	}
 
@@ -61,9 +61,8 @@ public class AppointmentService {
 		job.setTechnicianId(techId);
 		job.setStatus(true);
 		job.setSupervisorId(supId);
-		Job obj=null;
-		obj=update(job);
-		return obj;
+		job=update(job);
+		return job;
 	}
 
 

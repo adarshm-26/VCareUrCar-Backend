@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/user")
+
 public class UserServerController {
 
   private final UserServices services;
