@@ -1,7 +1,7 @@
 Job:
 	id			int
 	carId			int
-	ownerId			int
+	customerId		int
 	status			string
 	bookingDate		date
 	acceptedDate		date
@@ -10,7 +10,6 @@ Job:
 	appointedDate		date
 	supervisorId		int
 	technicianId		int
-	isServiceCompleted	boolean
 	discount		float
 	services		list<service>	*[a service object is also needed]
 
@@ -33,6 +32,7 @@ Service: *[Possible structure for service object]
 	cost			float
 	completedDate		date
 	verifiedDate		date
+	work			string
 
 common gate way/auth server: 
 	localhost:1112
@@ -119,14 +119,18 @@ jobs-service:
 		{
 			"id": __,
 			"carId": __,
-			"ownerId": __,
+			"customerId": __,
 			"status": __,
 			"bookingDate": __,
 			"services": [
-				...services
+				{
+					"name": __,
+					"cost": __
+				}
+				...
 			]
 		}
-		description: book an servicing appointment
+		description: book a servicing appointment
 		permissions: customer, admin
 	
 	2. POST	uri: /jobs/schedule
@@ -151,6 +155,7 @@ jobs-service:
 			"services": [
 				{
 					"name": __,
+					"work": __,
 					"completedDate": __,
 				},
 				....
@@ -161,35 +166,69 @@ jobs-service:
 		#NOTE: when a technician makes this request for
 			first time, only then the "appointedDate"
 			"status" are updated, all other time only
-			the services list's "completedDate" field
-			is updated
+			the services list's "work" and "completedDate"
+			field is updated
 	
-	***feeling sleepy, will update others tomorrow morning***
-
-	GET 	appointment/getAllAppointments
-	GET 	appointment/getAllTechnicians
-	POST	appointment/addJobToTech/{supId}/{techId}
+	4. POST uri: /jobs/verify
+		body:
 		{
-			"id":__
+			"id": __,
+			"status": __,
+			"services": [
+				{
+					"name": __,
+					"verifiedDate": __
+				}
+			]
 		}
-
-		note:supervisorId,technicianId,acceptedDate,status will be updated 
-
-	POST	appointment/estimating/cost/{jobId}
-		
-		note:execute only when technician complete the job
-		note:default:12000,will be change acc to service
-
-	//technician-service
+		description: update the job with verification dates
+		permissions: supervisor, admin
+		#NOTE: when all services are verified then "status" field
+			will be updated
 	
-	GET	appointment/getMyJob/{techId}
-	POST	appointment/assignToJob
+	5. GET	uri: /jobs/{userId}
+		description: return the list of jobs associated with given
+				user's id, if the user is customer
+				then return all jobs booked by him
+				if user is supervisor then return all
+				jobs supervised by him, and similarly
+				for technician
+		permissions: admin
+
+	6. GET	uri: /jobs/my
+		#NOTE: same as above request but accessible only to 
+			other user types
+
+	7. GET	uri: /job/{jobId}
+		description: Get details of the job with the given
+				jobId
+		permissions: All
+		#NOTE: Here, actually not everyone can access this endpoint
+			Only admin can do this, however for other users
+			their userId will be checked against the requested job
+			in the following manner -
+				a) Customer - userId == customerId
+				b) Supervisor - userId == supervisorId
+				c) Technician - userId == technicianId
+			this is the same as followed for "5." endpoint
+
+	8. GET 	uri: /jobs/all
+		description: Get all jobs in the database
+		permissions: admin
+		#NOTE: similar to "/user/all" endpoint, this will require
+			pagination
+
+	9. POST	uri: /jobs/remove
+		body:
 		{
-			"id":__
+			"id": __
 		}
+		description: to remove a job from database
+		permissions: admin
+
+	## for payment I have to find a few things first
+	// TODO -> Payment endpoint
 
 service-registry:
 	localhost:1111
 
-
-//TODO--payment-service
