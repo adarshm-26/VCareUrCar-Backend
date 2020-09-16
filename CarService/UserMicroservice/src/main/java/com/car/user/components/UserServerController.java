@@ -1,15 +1,11 @@
 package com.car.user.components;
 
-import org.springframework.http.HttpRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin
@@ -22,24 +18,42 @@ public class UserServerController {
     this.services = services;
   }
 
+  // 1.registration user and admin
   @PostMapping("/register")
   public ResponseEntity<String> register(@RequestBody User user) throws Exception {
 
-    String email = user.getEmail();
-    if (email != null && !"".equals(email)) {
-      User obj = services.getUserByEmail(email);
-      if (obj != null) {
-        throw new Exception("User already exists with " + email);
+      String email = user.getEmail();
+      if (email != null && !"".equals(email)) {
+        User obj = services.getUserByEmail(email);
+        if (obj != null) {
+          throw new Exception("User already exists with " + email);
+        }
       }
-    }
 
-    // TODO -> Add validation of other fields
+      // TODO -> Add validation of other fields
 
-    User obj = services.putUser(user);
-    if (obj != null) {
-      return ResponseEntity.ok("registration success id: " + user.getId());
-    }
+      User obj = services.putUser(user);
+      if (obj != null) {
+        return ResponseEntity.ok("registration success id: " + user.getId());
+      }
       return ResponseEntity.badRequest().body("registration failed. try again!");
+
+  }
+
+  //for getting user details
+
+  @GetMapping("/{userId}")
+  public Optional<User> getUser(@RequestHeader(name = "role") String role ,@PathVariable int userId) throws Exception {
+    if(role.equalsIgnoreCase("ROLE_admin")) {
+
+      Optional<User> userObj = null;
+      userObj = services.findUser(userId);
+      if (userObj == null) {
+        throw new Exception("user not exists");
+      }
+      return userObj;
+    }else
+      throw new Exception("unauthorized");
   }
 
   @GetMapping("/testSecure")
@@ -50,15 +64,5 @@ public class UserServerController {
       return new LinkedList<>();
   }
 
-  //this method will interact with appointment-service
-  @PostMapping("/bookAppointment/{id}/carservice")
-  public ResponseEntity<Object> appointmentRequest(@PathVariable("id") int id, @RequestBody Job request) {
-    if(services.findUser(id)==null) {
-      return new ResponseEntity<>("register to continue", HttpStatus.BAD_REQUEST);
-    }
 
-    return services.saveAppointment(request,id);
-
-
-  }
 }

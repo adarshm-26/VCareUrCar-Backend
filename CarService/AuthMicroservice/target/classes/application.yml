@@ -24,9 +24,13 @@ zuul:
       url: http://localhost:1113
       stripPrefix: true
  
-    appointment-service:
-      path: /appointment/**
+    jobs-service:
+      path: /jobs/**
       url: http://localhost:1114
+      stripPrefix: true
+    car-service:
+      path: /cars/**
+      url: http://localhost:1115
       stripPrefix: true
 
 

@@ -29,7 +29,7 @@ public class HeaderFilter extends ZuulFilter {
   public boolean shouldFilter() {
     String uri = RequestContext.getCurrentContext().getRequest().getRequestURI();
     if (uri.equalsIgnoreCase("/authenticate")) return false;
-    else if (uri.equalsIgnoreCase("/register")) return false;
+    else if (uri.equalsIgnoreCase("/user/register")) return false;
     else return true;
   }
 

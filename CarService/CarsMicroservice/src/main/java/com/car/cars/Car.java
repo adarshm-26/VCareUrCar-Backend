@@ -1,4 +1,4 @@
-package com.car.service.CarsMicroservice;
+package com.car.cars;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

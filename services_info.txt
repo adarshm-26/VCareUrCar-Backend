@@ -1,60 +1,234 @@
 Job:
-	id
-	carId
-	userId
-	status
-	bookingDate
-	AcceptedDate
-	paymentReceivedDate
-	appointedDate
-	SupervisorId
-	technicianId;
-	isServiceCompleted
-	discount
-	typeOfService
+	id			int
+	carId			int
+	customerId		int
+	status			string
+	bookingDate		date
+	acceptedDate		date
+	deadlineDate		date
+	paymentReceivedDate	date
+	appointedDate		date
+	supervisorId		int
+	technicianId		int
+	discount		float
+	services		list<service>	*[a service object is also needed]
 
+User:
+	id			int
+	name			string
+	type			string
+	email			string
+	phone			string
+	password		string
+
+Car:
+	id			int
+	model			string
+	ownerId 		int		*[a customer type user's ID]
+	**other fields as required
+
+Service: *[Possible structure for service object]
+	name			string
+	cost			float
+	completedDate		date
+	verifiedDate		date
+	work			string
 
 common gate way/auth server: 
 	localhost:1112
+	1. POST	uri: /authenticate	
+		body: 
+		{
+			"username": __,
+			"password": __		
+		}
+		description: Get authentication token
+		permissions: All
+
 user-service:
 	localhost:1113/
-	POST	user/register
-	POST	user/login
-	POST	user/bookAppointment/{userId}/carservice	
-		{
-			"id":__
-			"carId":__,
-			"discount":__,
-			"typeOfService":__
-		}
-		note: id,userId,status,bookingdate will be added to the database
+	1. POST	uri: /user/register
+		body: *User object
+		description: Save new user object in User repository
+		permissions: customer, admin
+		#NOTE: customer can add only themselves once
+			admin once created, will create
+			supervisors and technicians but not users, 
+			supervisors and technicians cannot add themselves
 
-Appointment-Service/jobs:
-	localhost:1114/
-	GET 	appointment/getAllAppointments
-	GET 	appointment/getAllTechnicians
-	POST	appointment/addJobToTech/{supId}/{techId}
-		{
-			"id":__
-		}
-
-		note:supervisorId,technicianId,acceptedDate,status will be updated 
-
-	POST	appointment/estimating/cost/{jobId}
-		
-		note:execute only when technician complete the job
-		note:default:12000,will be change acc to service
-
-	//technician-service
+	2. GET	uri: /user/{userId}
+		description: Get the user details of user having given userID
+		permissions: admin
 	
-	GET	appointment/getMyJob/{techId}
-	POST	appointment/assignToJob
+	3. GET	uri: /user/me
+		description: Get the user details of user making this request
+		permissions: All
+		#NOTE: this uri will not be made as a separate
+			endpoint, instead the uri above this,
+			numbered as "2." will handle this request
+			also
+
+	4. GET	uri: /user/all?pageNo={pageNo}
+		description: Get list of all users currently in the database
+		permissions: admin
+		#NOTE: this request will put a lot of load on the server
+			hence, the response will have to be paginated(sent
+			in pages), [no need to do this now, i think]
+
+car-service:
+	localhost:111?
+	1. POST	uri: /cars/add
+		body: *Car object
+		description: Save car details in Car repository
+		permissions: customer, admin
+	
+	2. POST uri: /cars/remove
+		body: 
 		{
-			"id":__
+			"id": __		
 		}
+		description: Remove car details from Car repository
+		permissions: customer, admin
+		#NOTE: cars can only have the ownerId of a valid
+			customer type user, here admin is given permission 
+			to add/remove cars on a customer's behalf.
+			other than customer no one can have car
+			details associated with them.
+	
+	3. GET	uri: /cars/{userId}/{carId}
+		description: Get the specified car details of the
+				specified user, also includes links
+				of jobs performed on the car
+		permissions: admin
+
+	4. GET	uri: /cars/my/{carId}
+		#NOTE: same as above request but for customers only
+
+	5. GET	uri: /cars/{userId}
+		description: Get list of cars of the specified user
+		permissions: admin
+	
+	6. GET	uri: /cars/my
+		#NOTE: same as above request but for customers only
+
+#*******************using "jobs" instead of "appointment" for ease of understanding********************
+jobs-service:
+	localhost:1114/
+	1. POST uri: /jobs/book
+		body: *Job object with following fields only
+		{
+			"id": __,
+			"carId": __,
+			"customerId": __,
+			"status": __,
+			"bookingDate": __,
+			"services": [
+				{
+					"name": __,
+					"cost": __
+				}
+				...
+			]
+		}
+		description: book a servicing appointment
+		permissions: customer, admin
+	
+	2. POST	uri: /jobs/schedule
+		body:
+		{
+			"id": __,
+			"supervisorId": __,
+			"acceptedDate": __,
+			"deadlineDate": __,
+			"technicianId": __,
+			"status": __,
+		}
+		description: update the job with these details
+		permissions: supervisor, admin
+
+	3. POST uri: /jobs/service
+		body:
+		{
+			"id": __,
+			"appointedDate": __,
+			"status": __,
+			"services": [
+				{
+					"name": __,
+					"work": __,
+					"completedDate": __,
+				},
+				....
+			]
+		}
+		description: update the job with these details
+		permissions: technician, admin
+		#NOTE: when a technician makes this request for
+			first time, only then the "appointedDate"
+			"status" are updated, all other time only
+			the services list's "work" and "completedDate"
+			field is updated
+	
+	4. POST uri: /jobs/verify
+		body:
+		{
+			"id": __,
+			"status": __,
+			"services": [
+				{
+					"name": __,
+					"verifiedDate": __
+				}
+			]
+		}
+		description: update the job with verification dates
+		permissions: supervisor, admin
+		#NOTE: when all services are verified then "status" field
+			will be updated
+	
+	5. GET	uri: /jobs/user/{userId}
+		description: return the list of jobs associated with given
+				user's id, if the user is customer
+				then return all jobs booked by him
+				if user is supervisor then return all
+				jobs supervised by him, and similarly
+				for technician
+		permissions: admin
+
+	6. GET	uri: /jobs/my
+		#NOTE: same as above request but accessible only to 
+			other user types
+
+	7. GET	uri: /job/{jobId}
+		description: Get details of the job with the given
+				jobId
+		permissions: All
+		#NOTE: Here, actually not everyone can access this endpoint
+			Only admin can do this, however for other users
+			their userId will be checked against the requested job
+			in the following manner -
+				a) Customer - userId == customerId
+				b) Supervisor - userId == supervisorId
+				c) Technician - userId == technicianId
+			this is the same as followed for "5." endpoint
+
+	8. GET 	uri: /jobs/all
+		description: Get all jobs in the database
+		permissions: admin
+		#NOTE: similar to "/user/all" endpoint, this will require
+			pagination
+
+	9. POST	uri: /jobs/remove
+		body:
+		{
+			"id": __
+		}
+		description: to remove a job from database
+		permissions: admin
+
+	## for payment I have to find a few things first
+	// TODO -> Payment endpoint
 
 service-registry:
 	localhost:1111
 
-
-//TODO--payment-service

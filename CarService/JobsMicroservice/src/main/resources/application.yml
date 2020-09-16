@@ -1,7 +1,7 @@
 # Registration Server config
 spring:
   application:
-    name: appointment-service
+    name: jobs-service
 
 
 server:

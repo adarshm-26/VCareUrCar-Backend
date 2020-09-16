@@ -1,8 +1,6 @@
-package com.car.service.CarsMicroservice;
+package com.car.cars;
 
-import com.car.service.CarsMicroservice.Car;
-import com.car.service.UserMicroservice.User;
-import com.car.service.CarsMicroservice.CarRepository;
+
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -15,18 +13,21 @@ public class CarServices {
     this.carRepository = carRepository;
   }
 
+  //register car details of user
   public Car putCar(Car car) {
     return carRepository.save(car);
   }
 
+  //get car bi id
   public Car getCarById(int id) {
     return carRepository.findById(id);
   }
 
-  public List<Car> getCarsOfOwner(User user) {
-    return carRepository.findCarsByOwnerId(user.getId());
+  // list of all cars belongs to one user
+  public List<Car> getCarsOfOwner(int ownerId) {
+    return carRepository.findCarsByOwnerId(ownerId);
   }
-
+  // delete car dtetails from user
   public void removeCar(Car car) {
     carRepository.delete(car);
   }

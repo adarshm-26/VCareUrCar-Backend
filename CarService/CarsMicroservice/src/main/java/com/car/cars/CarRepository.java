@@ -1,6 +1,6 @@
-package com.car.service.CarsMicroservice;
+package com.car.cars;
 
-import com.car.service.CarsMicroservice.Car;
+
 import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.List;
 
