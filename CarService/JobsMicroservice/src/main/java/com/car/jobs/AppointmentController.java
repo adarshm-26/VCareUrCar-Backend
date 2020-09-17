@@ -1,8 +1,9 @@
 package com.car.jobs;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -14,19 +15,25 @@ public class AppointmentController {
 
 	//this will be called by user-service
 	@PostMapping("/bookAppointment")
-	public Job registerAppointment( @RequestBody Job apt) throws Exception{
-		Job aptObj=null;
-		aptObj=service.regAppontment(apt);
-		if(aptObj==null)
-			throw new Exception("oops something went wrong");
-		
-		return aptObj;
+	public ResponseEntity<String> registerAppointment(
+			@RequestHeader(name = "role") String role,
+			@RequestHeader(name = "id") String id,
+			@RequestBody Job apt) throws Exception {
+		if (role.equalsIgnoreCase("ROLE_admin") ||
+				(role.equalsIgnoreCase("ROLE_customer") && Integer.parseInt(id) == apt.getCustomerId())) {
+			Job aptObj = service.regAppointment(apt);
+			return ResponseEntity.ok("Servicing Job booked with id: " + aptObj.getId());
+		} else {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
 	}
+
 	@PostMapping("/addJobToTech/{supId}/{techId}")
 	public Job addJobToTech(@PathVariable("techId") int techId, @PathVariable("supId") int supId , @RequestBody Job job){
 		
 		return service.assignToTechnician(techId,supId, job);
 	}
+
 	@GetMapping("/getAllTechnicians")
 	public List<User> getTechniciansAvl() throws Exception{
 		List<User> arr=service.getTechnicians("tech");
@@ -35,6 +42,7 @@ public class AppointmentController {
 		}
 		return arr;
 	}
+
 	@GetMapping("/getAllAppointments")
 	public List<Job> getAllJobs() throws Exception {
 		Job obj=null;
@@ -44,6 +52,7 @@ public class AppointmentController {
 		}
 		return arr;
 	}
+
 	//this method will be called by technician
 	@GetMapping("/getMyJob/{techId}")
 	public List<Job> getJobsByTechId(@PathVariable int techId){
@@ -51,6 +60,7 @@ public class AppointmentController {
 		return obj;
 
 	}
+
 	//this method will be called by technician -server
 	@PostMapping("/assignToJob")
 	public Job updateJobFields(@RequestBody Job job){
@@ -73,5 +83,4 @@ public class AppointmentController {
 		}
 		return job.getEstimatedCost();
 	}
-	
 }

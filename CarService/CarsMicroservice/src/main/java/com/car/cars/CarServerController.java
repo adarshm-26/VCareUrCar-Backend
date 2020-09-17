@@ -1,6 +1,8 @@
 package com.car.cars;
 
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,51 +18,75 @@ public class CarServerController {
   }
 
   @GetMapping("/{userId}/{carId}")
-  public Car getCarDetails(@RequestHeader(name = "role") String role,@PathVariable("userId") int userId,@PathVariable("carId") int carId) throws Exception {
-    if(role.equalsIgnoreCase("ROLE_admin")) {
-      Car car = null;
-      car = carServices.getCarById(carId);
-      if (car == null || car.getOwnerId() != userId) {
-        throw new Exception("invalid car id or owner id");
+  public ResponseEntity<Car> getCarDetails(@RequestHeader(name = "role") String role,
+                                           @RequestHeader(name = "id") String myId,
+                                           @PathVariable("userId") String userId,
+                                           @PathVariable("carId") int carId) throws Exception {
+    if (role.equalsIgnoreCase("ROLE_admin") || userId.equalsIgnoreCase("my")) {
+      try {
+        int userIdInt = Integer.parseInt(userId.equalsIgnoreCase("my") ?
+                                             myId :
+                                             userId);
+        Car car = carServices.getCarById(carId);
+        if (car != null && userIdInt == car.getOwnerId()) {
+          return ResponseEntity.accepted().body(car);
+        } else {
+          return ResponseEntity.badRequest().build();
+        }
+      } catch (NumberFormatException e) {
+        return ResponseEntity.unprocessableEntity().build();
       }
-      return car;
-    }throw new Exception("unauthorized");
+    } else {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
   }
 
   @GetMapping("/{userId}")
-  public List<Car> getUserCars(@RequestHeader(name = "role") String role,@PathVariable int userId) throws Exception {
-    if(role.equalsIgnoreCase("ROLE_admin")) {
-      List<Car> cars = null;
-      cars = carServices.getCarsOfOwner(userId);
-      if (cars == null) {
-        throw new Exception("no cars found");
+  public ResponseEntity<List<Car>> getUserCars(@RequestHeader(name = "role") String role,
+                               @RequestHeader(name = "id") String myId,
+                               @PathVariable String userId) throws Exception {
+    if(role.equalsIgnoreCase("ROLE_admin") || userId.equalsIgnoreCase("my")) {
+      int userIdInt = Integer.parseInt(userId.equalsIgnoreCase("my") ?
+                                          myId :
+                                          userId);
+      List<Car> cars = carServices.getCarsOfOwner(userIdInt);
+      if (cars != null) {
+        return ResponseEntity.accepted().body(cars);
+      } else {
+        return ResponseEntity.unprocessableEntity().build();
       }
-      return cars;
-    }throw new Exception("unauthorized");
+    } else {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
   }
 
-
-
   @PostMapping("/add")
-  public Car addCar(@RequestHeader(name = "role") String role,@RequestBody Car car) throws Exception {
-    if(role.equalsIgnoreCase("ROLE_admin") || role.equalsIgnoreCase("ROLE_customer")){
-      Car carObj=null;
-      carObj= carServices.putCar(car);
-      if(carObj==null){
-        throw new Exception("something went wrong");
-      }return carObj;
+  public ResponseEntity<String> addCar(@RequestHeader(name = "role") String role,
+                                       @RequestHeader(name = "id") String myId,
+                                       @RequestBody Car car) throws Exception {
+    if(role.equalsIgnoreCase("ROLE_admin") ||
+        (role.equalsIgnoreCase("ROLE_customer") && car.getOwnerId() == Integer.parseInt(myId))) {
+      Car carObj = carServices.putCar(car);
+      if(carObj != null){
+        return ResponseEntity.accepted().body("Added car with id: " + carObj.getId());
+      } else {
+        return ResponseEntity.badRequest().build();
+      }
+    } else {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
-    throw new Exception("unauthorized");
-
   }
 
   @PostMapping("/remove")
-  public String removeCar(@RequestHeader(name = "role") String role,@RequestBody Car car) throws Exception {
-    if (role.equalsIgnoreCase("ROLE_customer") || role.equalsIgnoreCase("ROLE_admin")) {
+  public ResponseEntity<String> removeCar(@RequestHeader(name = "role") String role,
+                                          @RequestHeader(name = "id") String myId,
+                                          @RequestBody Car car) throws Exception {
+    if (role.equalsIgnoreCase("ROLE_customer") ||
+        (role.equalsIgnoreCase("ROLE_admin") && car.getOwnerId() == Integer.parseInt(myId))) {
       carServices.removeCar(car);
-      return "Success";
+      return ResponseEntity.accepted().body("Removed car with id: " + car.getId());
+    } else {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
-    throw new Exception("unautorized");
   }
-
 }

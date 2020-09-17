@@ -50,9 +50,6 @@ public class User {
   }
 
   public void setPassword(String password) {
-
-  	// TODO -> Add hashing and salting here
-
     this.password = password;
   }
 

@@ -1,14 +1,11 @@
 package com.car.jobs;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -17,31 +14,28 @@ import java.util.List;
 @Service
 public class AppointmentService {
 	@Autowired
-	private JobRepository jobrepo;
+	private JobRepository jobRepo;
 	@Autowired
 	private UserRepository userRepo;
 	@Autowired
-	private RestTemplate template;
-	@Autowired
 	private MongoTemplate mongoTemplate;
 	
-	public Job regAppontment(Job appointment) {
-		appointment.setServiceCompleted(false);
-		return jobrepo.save(appointment);
-		
+	public Job regAppointment(Job job) {
+		job.setStatus("BOOKED");
+		return jobRepo.save(job);
 	}
 
-	
 	public List<User> getTechnicians(String type){
 		List<User> arr=userRepo.findAllByType(type);
 		return arr;
 	}
-	public Job saveUerJob(Job job){
-		return jobrepo.save(job);
-	}
-	public List<Job> getJobs(boolean status){
-		return jobrepo.findAllByStatus(status);
 
+	public Job saveUserJob(Job job){
+		return jobRepo.save(job);
+	}
+
+	public List<Job> getJobs(boolean status){
+		return jobRepo.findAllByStatus(status);
 	}
 
 	public Job update(Job job){
@@ -54,6 +48,7 @@ public class AppointmentService {
 		update.set("supervisorId",job.getSupervisorId());
 		return mongoTemplate.findAndModify(query,update,Job.class);
 	}
+
 	public Job assignToTechnician(int techId,int supId,Job job){
 		SimpleDateFormat formatter=new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		Date date=new Date();
@@ -67,7 +62,7 @@ public class AppointmentService {
 
 
 	public List<Job> getJobTechId(int techId){
-		return jobrepo.findAllByTechnicianId(techId);
+		return jobRepo.findAllByTechnicianId(techId);
 	}
 
 	public Job updateAndAssign(Job job) {
@@ -89,7 +84,7 @@ public class AppointmentService {
 		return mongoTemplate.findAndModify(query,update,Job.class);
 	}
 	public Job getJob(int id){
-		return jobrepo.findById(id);
+		return jobRepo.findById(id);
 	}
 
 	private Job costUpdate(Job job){

@@ -1,15 +1,14 @@
 package com.car.user.components;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @CrossOrigin
-
 public class UserServerController {
 
   private final UserServices services;
@@ -21,7 +20,6 @@ public class UserServerController {
   // 1.registration user and admin
   @PostMapping("/register")
   public ResponseEntity<String> register(@RequestBody User user) throws Exception {
-
       String email = user.getEmail();
       if (email != null && !"".equals(email)) {
         User obj = services.getUserByEmail(email);
@@ -29,33 +27,38 @@ public class UserServerController {
           throw new Exception("User already exists with " + email);
         }
       }
-
-      // TODO -> Add validation of other fields
-
       User obj = services.putUser(user);
       if (obj != null) {
-        return ResponseEntity.ok("registration success id: " + user.getId());
+        return ResponseEntity.ok("Registration ID: " + user.getId());
       }
-      return ResponseEntity.badRequest().body("registration failed. try again!");
-
+      return ResponseEntity.badRequest().body("Unable to register");
   }
 
   //for getting user details
-
   @GetMapping("/{userId}")
-  public Optional<User> getUser(@RequestHeader(name = "role") String role ,@PathVariable int userId) throws Exception {
-    if(role.equalsIgnoreCase("ROLE_admin")) {
-
-      Optional<User> userObj = null;
-      userObj = services.findUser(userId);
-      if (userObj == null) {
-        throw new Exception("user not exists");
+  public ResponseEntity<User> getUser(@RequestHeader(name = "role") String role ,
+                                      @RequestHeader(name = "id") String myId,      // <-- Just to handle the "me" endpoint
+                                      @PathVariable String userId) throws Exception {
+    if (role.equalsIgnoreCase("ROLE_admin") || userId.equalsIgnoreCase("me")) {
+      try {
+        int userIdInt = Integer.parseInt(userId.equalsIgnoreCase("me") ?
+                                            myId :
+                                            userId);
+        User user = services.findUser(userIdInt);
+        if (user != null) {
+          return ResponseEntity.accepted().body(user);
+        } else {
+          return ResponseEntity.unprocessableEntity().build();
+        }
+      } catch (NumberFormatException e) {
+        return ResponseEntity.unprocessableEntity().build();
       }
-      return userObj;
-    }else
-      throw new Exception("unauthorized");
+    } else {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
   }
 
+  // TODO -> To implement correctly
   @GetMapping("/testSecure")
   public List<User> getAll(@RequestHeader(name = "role") String role) throws Exception {
     if (role.equalsIgnoreCase("ROLE_customer"))
@@ -63,6 +66,4 @@ public class UserServerController {
     else
       return new LinkedList<>();
   }
-
-
 }

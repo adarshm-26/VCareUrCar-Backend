@@ -1,17 +1,13 @@
 package com.car.user.components;
 
 import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 @Service
 public class UserServices {
   @Autowired
-  private RestTemplate template;
   private final UserRepository userRepository;
   private final BCryptPasswordEncoder passwordEncoder;
 
@@ -43,20 +39,8 @@ public class UserServices {
   }
 
   //get user by id
-  public Optional<User> findUser(int id) {
+  public User findUser(int id) {
     return userRepository.findById(id);
   }
 
-//  public ResponseEntity<Object> saveAppointment(Job request, int id) {
-//    request.setUserId(id);
-//    SimpleDateFormat formatter=new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-//    Date date=new Date();
-//    request.setBookingDate(date);
-//    request.setStatus(false);
-//    Job appointment=null;
-//    appointment=template.postForObject( "http://APPOINTMENT-SERVICE/bookAppointment", request, Job.class);
-//    if(appointment==null)
-//      return new ResponseEntity<>("failed to register",HttpStatus.BAD_REQUEST);
-//    return new ResponseEntity<>("success", HttpStatus.OK);
-//  }
 }

@@ -11,7 +11,6 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 @Configuration
 @EnableMongoRepositories(basePackages = "com.car.jobs")
-
 public class JobConfig {
     @Bean
     public MongoClient mongo(){
@@ -19,6 +18,7 @@ public class JobConfig {
         MongoClientSettings mongoClientSettings=MongoClientSettings.builder().applyConnectionString(connectionString).build();
         return MongoClients.create(mongoClientSettings);
     }
+
     @Bean
     public MongoTemplate mongoTemplate() throws Exception{
         return new MongoTemplate(mongo(),"CarService");

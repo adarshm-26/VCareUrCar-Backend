@@ -24,6 +24,8 @@ public class HeaderFilter extends ZuulFilter {
   JwtTokenUtil tokenUtil;
   @Autowired
   JwtUserDetailsService userDetailsService;
+  @Autowired
+  UserServices userServices;
 
   @Override
   public boolean shouldFilter() {
@@ -52,12 +54,14 @@ public class HeaderFilter extends ZuulFilter {
     }
     else {
       token = token.substring(7);
+      String username = tokenUtil.getUsernameFromToken(token);
       if (tokenUtil.validateToken(token, userDetailsService
-          .loadUserByUsername(tokenUtil.getUsernameFromToken(token))) &&
+          .loadUserByUsername(username)) &&
           !tokenUtil.isTokenExpired(token)) {
         String role = (String) tokenUtil.getAllClaimsFromToken(token).get("role");
-        request.setAttribute("role", role);
         RequestContext.getCurrentContext().addZuulRequestHeader("role", role);
+        int id = userServices.getUserByEmail(username).getId();
+        RequestContext.getCurrentContext().addZuulRequestHeader("id", ""+id);
       }
       else {
         RequestContext.getCurrentContext().setSendZuulResponse(false);
