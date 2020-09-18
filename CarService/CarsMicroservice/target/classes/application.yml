@@ -1,7 +1,11 @@
 spring:
   application:
     name: car-service
-
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: CarService
 
 server:
   port: 1115  # Registration server port

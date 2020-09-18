@@ -17,31 +17,25 @@ public class CarServerController {
     this.carServices = carServices;
   }
 
-  @GetMapping("/{userId}/{carId}")
+  @GetMapping("/{carId}")
   public ResponseEntity<Car> getCarDetails(@RequestHeader(name = "role") String role,
                                            @RequestHeader(name = "id") String myId,
-                                           @PathVariable("userId") String userId,
                                            @PathVariable("carId") int carId) throws Exception {
-    if (role.equalsIgnoreCase("ROLE_admin") || userId.equalsIgnoreCase("my")) {
-      try {
-        int userIdInt = Integer.parseInt(userId.equalsIgnoreCase("my") ?
-                                             myId :
-                                             userId);
-        Car car = carServices.getCarById(carId);
-        if (car != null && userIdInt == car.getOwnerId()) {
+    int userIdInt = Integer.parseInt(myId);
+    Car car = carServices.getCarById(carId);
+    if (role.equalsIgnoreCase("ROLE_admin") ||
+        role.equalsIgnoreCase("ROLE_customer") && car.getOwnerId() == userIdInt) {
+        if (car != null) {
           return ResponseEntity.accepted().body(car);
         } else {
           return ResponseEntity.badRequest().build();
         }
-      } catch (NumberFormatException e) {
-        return ResponseEntity.unprocessableEntity().build();
-      }
     } else {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
   }
 
-  @GetMapping("/{userId}")
+  @GetMapping("/byUser/{userId}")
   public ResponseEntity<List<Car>> getUserCars(@RequestHeader(name = "role") String role,
                                @RequestHeader(name = "id") String myId,
                                @PathVariable String userId) throws Exception {

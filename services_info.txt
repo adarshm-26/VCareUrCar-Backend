@@ -95,20 +95,17 @@ car-service:
 			other than customer no one can have car
 			details associated with them.
 	
-	3. GET	uri: /cars/{userId}/{carId}
+	3. GET	uri: /cars/{carId}
 		description: Get the specified car details of the
 				specified user, also includes links
 				of jobs performed on the car
 		permissions: admin
 
-	4. GET	uri: /cars/my/{carId}
-		#NOTE: same as above request but for customers only
-
-	5. GET	uri: /cars/{userId}
+	4. GET	uri: /cars/byUser/{userId}
 		description: Get list of cars of the specified user
 		permissions: admin
 	
-	6. GET	uri: /cars/my
+	5. GET	uri: /cars/byUser/my
 		#NOTE: same as above request but for customers only
 
 #*******************using "jobs" instead of "appointment" for ease of understanding********************
@@ -186,7 +183,7 @@ jobs-service:
 		#NOTE: when all services are verified then "status" field
 			will be updated
 	
-	5. GET	uri: /jobs/user/{userId}
+	5. GET	uri: /jobs/byUser/{userId}
 		description: return the list of jobs associated with given
 				user's id, if the user is customer
 				then return all jobs booked by him
@@ -195,11 +192,11 @@ jobs-service:
 				for technician
 		permissions: admin
 
-	6. GET	uri: /jobs/my
+	6. GET	uri: /jobs/byUser/my
 		#NOTE: same as above request but accessible only to 
 			other user types
 
-	7. GET	uri: /job/{jobId}
+	7. GET	uri: /jobs/{jobId}
 		description: Get details of the job with the given
 				jobId
 		permissions: All

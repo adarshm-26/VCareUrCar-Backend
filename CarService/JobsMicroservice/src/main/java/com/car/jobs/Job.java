@@ -58,7 +58,7 @@ public class Job {
     this.customerId = customerId;
   }
 
-  public String isStatus() {
+  public String getStatus() {
     return status;
   }
 

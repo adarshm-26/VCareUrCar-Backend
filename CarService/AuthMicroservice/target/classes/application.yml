@@ -23,7 +23,6 @@ zuul:
       path: /user/**
       url: http://localhost:1113
       stripPrefix: true
- 
     jobs-service:
       path: /jobs/**
       url: http://localhost:1114
