@@ -1,0 +1,63 @@
+version: '3.3'
+
+services:
+  mongod:
+    container_name: mongod
+    image: mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo_data:/data/db
+      - mongo_config:/data/configdb
+  eureka:
+    container_name: eureka
+    image: vcareurcar.eureka
+    ports:
+      - 1111:1111
+    environment:
+      - "JAVA_OPTS=-Dspring.profiles.active=prod"
+  auth:
+    image: vcareurcar.auth
+    ports:
+      - 1112:1112
+    depends_on:
+      - mongod
+      - eureka
+      - user
+      - job
+      - car
+    environment:
+      - "JAVA_OPTS=-Dspring.profiles.active=prod"
+  user:
+    image: vcareurcar.user
+    ports:
+      - 1113:1113
+    depends_on:
+      - mongod
+      - eureka
+    environment:
+      - "JAVA_OPTS=-Dspring.profiles.active=prod"
+  job:
+    image: vcareurcar.job
+    ports:
+      - 1114:1114
+    depends_on:
+      - mongod
+      - eureka
+    environment:
+      - "JAVA_OPTS=-Dspring.profiles.active=prod"
+  car:
+    image: vcareurcar.car
+    ports:
+      - 1115:1115
+    depends_on:
+      - mongod
+      - eureka
+    environment:
+      - "JAVA_OPTS=-Dspring.profiles.active=prod"
+
+volumes:
+  mongo_data:
+    external: true
+  mongo_config:
+    external: true

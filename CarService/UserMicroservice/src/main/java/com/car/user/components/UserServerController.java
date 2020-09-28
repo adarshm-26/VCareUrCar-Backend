@@ -5,10 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@CrossOrigin
 public class UserServerController {
 
   private final UserServices services;
