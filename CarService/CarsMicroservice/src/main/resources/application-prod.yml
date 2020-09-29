@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: car-service
+  data:
+    mongodb:
+      host: mongod
+      port: 27017
+      database: CarService
+
+server:
+  port: 1115
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://eureka:1111/eureka/
+  instance:
+    leaseRenewalIntervalInSeconds: 5

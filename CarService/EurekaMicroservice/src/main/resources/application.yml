@@ -1,5 +1,5 @@
 spring:
   application:
-    name: car-service
+    name: eureka-service
   profiles:
     active: dev

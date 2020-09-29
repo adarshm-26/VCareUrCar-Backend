@@ -1,15 +1,5 @@
-# Registration Server config
 spring:
   application:
     name: jobs-service
-
-
-server:
-  port: 1114  # Registration server port
-
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: http://localhost:1111/eureka/
-  instance:
-    leaseRenewalIntervalInSeconds: 5
+  profiles:
+    active: dev

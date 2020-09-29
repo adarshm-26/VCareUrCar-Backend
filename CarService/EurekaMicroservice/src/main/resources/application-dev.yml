@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: eureka-service
+
+server:
+  port: 1111
+
+eureka:
+  instance:
+    hostname: localhost
+    lease-renewal-interval-in-seconds: 5
+  client:
+    register-with-eureka: false
+    fetch-registry: false
