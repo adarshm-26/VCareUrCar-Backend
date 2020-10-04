@@ -1,10 +1,17 @@
 package com.car.user.components;
 
+import org.bson.types.ObjectId;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.LinkedList;
-import java.util.List;
+
+import java.util.Arrays;
 
 @RestController
 public class UserServerController {
@@ -34,17 +41,17 @@ public class UserServerController {
 
   //for getting user details
   @GetMapping("/{userId}")
-  public ResponseEntity<User> getUser(@RequestHeader(name = "role") String role ,
+  public ResponseEntity<User> getUser(@RequestHeader(name = "role") String role,
                                       @RequestHeader(name = "id") String myId,      // <-- Just to handle the "me" endpoint
                                       @PathVariable String userId) throws Exception {
     if (role.equalsIgnoreCase("ROLE_admin") || userId.equalsIgnoreCase("me")) {
       try {
-        int userIdInt = Integer.parseInt(userId.equalsIgnoreCase("me") ?
+        ObjectId userIdInt = new ObjectId(userId.equalsIgnoreCase("me") ?
                                             myId :
                                             userId);
         User user = services.findUser(userIdInt);
         if (user != null) {
-          return ResponseEntity.accepted().body(user);
+          return ResponseEntity.ok().body(user);
         } else {
           return ResponseEntity.unprocessableEntity().build();
         }
@@ -56,12 +63,21 @@ public class UserServerController {
     }
   }
 
-  // TODO -> To implement correctly
-  @GetMapping("/testSecure")
-  public List<User> getAll(@RequestHeader(name = "role") String role) throws Exception {
-    if (role.equalsIgnoreCase("ROLE_customer"))
-      return services.getAllUsers();
-    else
-      return new LinkedList<>();
+  @GetMapping("/all")
+  public ResponseEntity<Page<User>> getAll(@RequestHeader(name = "role") String role,
+                                           @RequestHeader(name = "id") String myId,
+                                           @RequestParam(name = "type", defaultValue = "customer") String type,
+                                           @SortDefault.SortDefaults({
+                                               @SortDefault(sort = "name", direction = Sort.Direction.ASC)
+                                           }) Pageable pageable) {
+    if (role.equalsIgnoreCase("ROLE_admin")) {
+      Page<User> resultPage = services.getAllUsersOfType(type, pageable);
+      return ResponseEntity.ok().body(resultPage);
+    } else if (role.equalsIgnoreCase("ROLE_supervisor")) {
+      Page<User> resultPage = services.getAllUsersOfType("technician", pageable);
+      return ResponseEntity.ok().body(resultPage);
+    } else {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
   }
 }

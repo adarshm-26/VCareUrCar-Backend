@@ -1,10 +1,14 @@
 package com.car.jobs;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Date;
 import java.util.List;
@@ -14,47 +18,68 @@ import java.util.List;
 @AllArgsConstructor
 @Document (collection = "Jobs")
 public class Job {
+  @JsonSerialize(using = ToStringSerializer.class)
   @Id
-  private int id;
-  private int carId;
-  private int customerId;
+  private ObjectId id;
+
+  @JsonSerialize(using = ToStringSerializer.class)
+  private ObjectId carId;
+
+  @Indexed
+  @JsonSerialize(using = ToStringSerializer.class)
+  private ObjectId customerId;
+
+  @Indexed
   private String status;
+
   @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "dd-MM-yyyy")
   private Date bookingDate;
+
   @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "dd-MM-yyyy")
   private Date acceptedDate;
+
   @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "dd-MM-yyyy")
   private Date appointedDate;
+
   @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "dd-MM-yyyy")
   private Date paymentReceiveDate;
+
   @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "dd-MM-yyyy")
   private Date deadlineDate;
-  private int supervisorId;
-  private int technicianId;
+
+  @Indexed
+  @JsonSerialize(using = ToStringSerializer.class)
+  private ObjectId supervisorId;
+
+  @Indexed
+  @JsonSerialize(using = ToStringSerializer.class)
+  private ObjectId technicianId;
+
   private int discount;
+
   private List<Service> services;
 
-  public int getId() {
+  public ObjectId getId() {
     return id;
   }
 
-  public void setId(int id) {
+  public void setId(ObjectId id) {
     this.id = id;
   }
 
-  public int getCarId() {
+  public ObjectId getCarId() {
     return carId;
   }
 
-  public void setCarId(int carId) {
+  public void setCarId(ObjectId carId) {
     this.carId = carId;
   }
 
-  public int getCustomerId() {
+  public ObjectId getCustomerId() {
     return customerId;
   }
 
-  public void setCustomerId(int customerId) {
+  public void setCustomerId(ObjectId customerId) {
     this.customerId = customerId;
   }
 
@@ -106,19 +131,19 @@ public class Job {
     this.deadlineDate = deadlineDate;
   }
 
-  public int getSupervisorId() {
+  public ObjectId getSupervisorId() {
     return supervisorId;
   }
 
-  public void setSupervisorId(int supervisorId) {
+  public void setSupervisorId(ObjectId supervisorId) {
     this.supervisorId = supervisorId;
   }
 
-  public int getTechnicianId() {
+  public ObjectId getTechnicianId() {
     return technicianId;
   }
 
-  public void setTechnicianId(int technicianId) {
+  public void setTechnicianId(ObjectId technicianId) {
     this.technicianId = technicianId;
   }
 

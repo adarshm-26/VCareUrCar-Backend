@@ -1,12 +1,15 @@
 package com.car.jobs;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -33,6 +36,8 @@ public class JobService {
 	}
 
 	public Job updateJobForServicing(Job job) {
+		if (job.getServices().stream().allMatch(service -> service.getCompletedDate() != null))
+			job.setStatus("AWAITING_VERIFICATION");
 		Query query = new Query();
 		query.addCriteria(Criteria.where("id").is(job.getId()));
 		Update update = new Update();
@@ -51,28 +56,32 @@ public class JobService {
 		return mongoTemplate.findAndModify(query,update,Job.class);
 	}
 
-	public Job getJob(int id){
-		return jobrepo.findById(id);
+	public Job getJob(ObjectId id){
+		return jobrepo.findById(id).orElse(null);
 	}
 
-	public List<Job> getJobsByCustomer(int id){
-		return jobrepo.findAllByCustomerId(id);
+	public Page<Job> getJobsByCustomer(ObjectId id, Pageable pageable){
+		return jobrepo.findAllByCustomerId(id, pageable);
 	}
 
-	public List<Job> getJobsBySupervisor(int id){
-		return jobrepo.findAllBySupervisorId(id);
+	public Page<Job> getJobsBySupervisor(ObjectId id, Pageable pageable){
+		return jobrepo.findAllBySupervisorId(id, pageable);
 	}
 
-	public List<Job> getJobsByTechnician(int id){
-		return jobrepo.findAllByTechnicianId(id);
+	public Page<Job> getJobsByStatus(String status, Pageable pageable) {
+		return jobrepo.findAllByStatus(status, pageable);
 	}
 
-	public List<Job> getAllJobs(){
-		return jobrepo.findAll();
+	public Page<Job> getJobsByTechnician(ObjectId id, Pageable pageable){
+		return jobrepo.findAllByTechnicianId(id, pageable);
 	}
 
-	public void deleteJob(int id){
-		Job job = jobrepo.findById(id);
+	public Page<Job> getAllJobs(Pageable pageable){
+		return jobrepo.findAll(pageable);
+	}
+
+	public void deleteJob(ObjectId id){
+		Job job = getJob(id);
 		jobrepo.delete(job);
 	}
 }

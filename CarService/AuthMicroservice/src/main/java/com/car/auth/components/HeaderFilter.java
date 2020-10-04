@@ -4,6 +4,7 @@ import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
 import io.jsonwebtoken.Claims;
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,8 +61,8 @@ public class HeaderFilter extends ZuulFilter {
           !tokenUtil.isTokenExpired(token)) {
         String role = (String) tokenUtil.getAllClaimsFromToken(token).get("role");
         RequestContext.getCurrentContext().addZuulRequestHeader("role", role);
-        int id = userServices.getUserByEmail(username).getId();
-        RequestContext.getCurrentContext().addZuulRequestHeader("id", ""+id);
+        ObjectId id = userServices.getUserByEmail(username).getId();
+        RequestContext.getCurrentContext().addZuulRequestHeader("id", id.toString());
       }
       else {
         RequestContext.getCurrentContext().setSendZuulResponse(false);

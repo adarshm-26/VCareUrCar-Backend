@@ -1,23 +1,27 @@
 package com.car.jobs;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "User")
 public class User {
+  @JsonSerialize(using = ToStringSerializer.class)
   @Id
-  private int id;
+  private ObjectId id;
   private String name;
   private String type;
   private String email;
   private String phone;
   private String password;
 
-  public long getId() {
+  public ObjectId getId() {
     return id;
   }
 
-  public void setId(int id) {
+  public void setId(ObjectId id) {
     this.id = id;
   }
 
@@ -50,9 +54,6 @@ public class User {
   }
 
   public void setPassword(String password) {
-
-  	// TODO -> Add hashing and salting here
-
     this.password = password;
   }
 

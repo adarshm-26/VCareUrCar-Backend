@@ -1,20 +1,30 @@
 package com.car.cars;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document (collection = "Cars")
 public class Car {
-  @Id
-  private int id;
-  private String model;
-  private int ownerId;
 
-  public int getId() {
+  @JsonSerialize(using = ToStringSerializer.class)
+  @Id
+  private ObjectId id;
+
+  private String model;
+
+  @Indexed
+  @JsonSerialize(using = ToStringSerializer.class)
+  private ObjectId ownerId;
+
+  public ObjectId getId() {
     return id;
   }
 
-  public void setId(int id) {
+  public void setId(ObjectId id) {
     this.id = id;
   }
 
@@ -26,11 +36,11 @@ public class Car {
     this.model = model;
   }
 
-  public int getOwnerId() {
+  public ObjectId getOwnerId() {
     return ownerId;
   }
 
-  public void setOwnerId(int ownerId) {
+  public void setOwnerId(ObjectId ownerId) {
     this.ownerId = ownerId;
   }
 }

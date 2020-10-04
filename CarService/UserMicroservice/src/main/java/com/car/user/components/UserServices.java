@@ -1,7 +1,12 @@
 package com.car.user.components;
 
 import java.util.List;
+import java.util.Optional;
+
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -29,8 +34,12 @@ public class UserServices {
   }
 
   // Fetch All
-  public List<User> getAllUsers() {
-    return userRepository.findAll();
+  public Page<User> getAllUsers(Pageable pageable) {
+    return userRepository.findAll(pageable);
+  }
+
+  public Page<User> getAllUsersOfType(String type, Pageable pageable) {
+    return userRepository.findAllByType(type, pageable);
   }
 
   // Remove a User from database
@@ -39,8 +48,9 @@ public class UserServices {
   }
 
   //get user by id
-  public User findUser(int id) {
-    return userRepository.findById(id);
+  public User findUser(ObjectId id) {
+    Optional<User> user = userRepository.findById(id);
+    return user.orElse(null);
   }
 
 }
