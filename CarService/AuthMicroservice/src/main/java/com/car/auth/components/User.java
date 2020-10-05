@@ -1,23 +1,26 @@
 package com.car.auth.components;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "Users")
 public class User {
   @Id
-  private int id;
+  private ObjectId id;
   private String name;
   private String type;
+  @Indexed
   private String email;
   private String phone;
   private String password;
 
-  public int getId() {
+  public ObjectId getId() {
     return id;
   }
 
-  public void setId(int id) {
+  public void setId(ObjectId id) {
     this.id = id;
   }
 

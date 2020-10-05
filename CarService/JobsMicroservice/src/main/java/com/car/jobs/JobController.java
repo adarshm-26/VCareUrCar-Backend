@@ -1,6 +1,11 @@
 package com.car.jobs;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +24,7 @@ public class JobController {
 	public ResponseEntity<Job> registerAppointment(@RequestHeader(name = "role") String role,
 																								 @RequestHeader(name = "id") String myId,
 																								 @RequestBody Job job) {
-		if ((role.equalsIgnoreCase("ROLE_customer") && Integer.parseInt(myId) == job.getCustomerId()) ||
+		if ((role.equalsIgnoreCase("ROLE_customer") && job.getCustomerId().equals(new ObjectId(myId))) ||
 				role.equalsIgnoreCase("ROLE_admin")) {
 			if (service.getJob(job.getId()) != null)
 				return ResponseEntity.badRequest().build();
@@ -41,7 +46,7 @@ public class JobController {
 	public ResponseEntity<Job> acceptAndScheduleJob(@RequestHeader(name = "role") String role,
 																									 @RequestHeader(name = "id") String myId,
 																									 @RequestBody Job job) {
-		if ((role.equalsIgnoreCase("ROLE_supervisor") && Integer.parseInt(myId) == job.getSupervisorId()) ||
+		if ((role.equalsIgnoreCase("ROLE_supervisor") && job.getSupervisorId().equals(new ObjectId(myId))) ||
 				role.equalsIgnoreCase("ROLE_admin")) {
 			if (!service.getJob(job.getId()).getStatus().equalsIgnoreCase("BOOKED"))						// To prevent updating more than once
 				return ResponseEntity.badRequest().build();
@@ -63,7 +68,7 @@ public class JobController {
 	public ResponseEntity<Job> addServiceLogs(@RequestHeader(name = "role") String role,
 																						@RequestHeader(name = "id") String myId,
 																						@RequestBody Job job) {
-		if ((role.equalsIgnoreCase("ROLE_technician") && Integer.parseInt(myId) == job.getTechnicianId()) ||
+		if ((role.equalsIgnoreCase("ROLE_technician") && job.getTechnicianId().equals(new ObjectId(myId))) ||
 				role.equalsIgnoreCase("ROLE_admin")) {
 
 			Job curJob = service.getJob(job.getId());
@@ -94,7 +99,7 @@ public class JobController {
 	public ResponseEntity<Job> verifyServiceLogs(@RequestHeader(name = "role") String role,
 																		@RequestHeader(name = "id") String myId,
 																		@RequestBody Job job) {
-		if ((role.equalsIgnoreCase("ROLE_supervisor") && Integer.parseInt(myId) == job.getSupervisorId()) ||
+		if ((role.equalsIgnoreCase("ROLE_supervisor") && job.getSupervisorId().equals(new ObjectId(myId))) ||
 				role.equalsIgnoreCase("ROLE_admin")) {
 
 			if (!service.getJob(job.getId()).getStatus().equalsIgnoreCase("UNDER_SERVICE"))
@@ -115,25 +120,28 @@ public class JobController {
 	}
 
 	@GetMapping("/byUser/{userId}")
-	public ResponseEntity<List<Job>> getJobsByUser(@RequestHeader(name = "role") String role,
-																	 @RequestHeader(name = "id") String myId,
-																	 @PathVariable String userId) throws Exception {
+	public ResponseEntity<Page<Job>> getJobsByUser(@RequestHeader(name = "role") String role,
+																								 @RequestHeader(name = "id") String myId,
+																								 @PathVariable String userId,
+																								 @SortDefault.SortDefaults({
+																										 @SortDefault(sort = "id", direction = Sort.Direction.DESC)
+																								 }) Pageable pageable) throws Exception {
 		if (userId.equalsIgnoreCase("my") ||
 				role.equalsIgnoreCase("ROLE_admin")) {
-			int userIdInt = Integer.parseInt(userId.equalsIgnoreCase("my") ?
+			ObjectId userObjId = new ObjectId(userId.equalsIgnoreCase("my") ?
 																					 myId :
 																					 userId);
-			List<Job> jobs;
+			Page<Job> jobs;
 			switch (role) {
 				case "ROLE_customer":
 				case "ROLE_admin":
-					jobs = service.getJobsByCustomer(userIdInt);
+					jobs = service.getJobsByCustomer(userObjId, pageable);
 					break;
 				case "ROLE_supervisor":
-					jobs = service.getJobsBySupervisor(userIdInt);
+					jobs = service.getJobsBySupervisor(userObjId, pageable);
 					break;
 				case "ROLE_technician":
-					jobs = service.getJobsByTechnician(userIdInt);
+					jobs = service.getJobsByTechnician(userObjId, pageable);
 					break;
 				default:
 					return ResponseEntity.badRequest().build();
@@ -144,25 +152,43 @@ public class JobController {
 		}
 	}
 
+	@GetMapping("/byStatus/{status}")
+	public ResponseEntity<Page<Job>> getJobByStatus(@RequestHeader(name = "role") String role,
+																									@PathVariable(required = false) String status,
+																									@SortDefault.SortDefaults({
+																											@SortDefault(sort = "id", direction = Sort.Direction.DESC)
+																									}) Pageable pageable) {
+		if (role.equalsIgnoreCase("ROLE_admin")) {
+			if (status.equalsIgnoreCase("")) status = "COMPLETED";
+			Page<Job> jobs = service.getJobsByStatus(status, pageable);
+			return ResponseEntity.ok().body(jobs);
+		} else if (role.equalsIgnoreCase("ROLE_supervisor")) {
+			Page<Job> jobs = service.getJobsByStatus("BOOKED", pageable);
+			return ResponseEntity.ok().body(jobs);
+		} else {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+	}
+
 	@GetMapping("/{jobId}")
 	public ResponseEntity<Job> getJob(@RequestHeader(name = "role") String role,
 																		@RequestHeader(name = "id") String myId,
-																		@PathVariable int jobId) throws Exception {
-		Job job = service.getJob(jobId);
+																		@PathVariable String jobId) throws Exception {
+		Job job = service.getJob(new ObjectId(jobId));
 		if (job != null) {
 			switch (role) {
 				case "ROLE_customer":
-					if (Integer.parseInt(myId) == job.getCustomerId())
+					if (job.getCustomerId().equals(new ObjectId(myId)))
 						return ResponseEntity.ok(job);
 					else
 						return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 				case "ROLE_supervisor":
-					if (Integer.parseInt(myId) == job.getSupervisorId())
+					if (job.getSupervisorId().equals(new ObjectId(myId)))
 						return ResponseEntity.ok(job);
 					else
 						return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 				case "ROLE_technician":
-					if (Integer.parseInt(myId) == job.getTechnicianId())
+					if (job.getTechnicianId().equals(new ObjectId(myId)))
 						return ResponseEntity.ok(job);
 					else
 						return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -177,9 +203,12 @@ public class JobController {
 	}
 
 	@GetMapping("/all")
-	public ResponseEntity<List<Job>> getAll(@RequestHeader(name = "role") String role) throws Exception {
+	public ResponseEntity<Page<Job>> getAll(@RequestHeader(name = "role") String role,
+																					@SortDefault.SortDefaults({
+																							@SortDefault(sort = "id", direction = Sort.Direction.DESC)
+																					}) Pageable pageable) throws Exception {
 		if (role.equalsIgnoreCase("ROLE_admin")) {
-			List<Job> jobs = service.getAllJobs();
+			Page<Job> jobs = service.getAllJobs(pageable);
 			return ResponseEntity.ok(jobs);
 		} else {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

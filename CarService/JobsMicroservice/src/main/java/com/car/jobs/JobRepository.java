@@ -1,19 +1,19 @@
 package com.car.jobs;
 
-
-import com.car.jobs.Job;
+import org.bson.types.ObjectId;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import java.util.Optional;
 
-import java.util.List;
+public interface JobRepository extends MongoRepository<Job, ObjectId> {
+  Optional<Job> findById(ObjectId id);
 
-public interface JobRepository extends MongoRepository<Job,Integer> {
-  public Job findById(int id);
+  Page<Job> findAllByTechnicianId(ObjectId techId, Pageable pageable);
 
-  public List<Job> findAllByTechnicianId(int techId);
+  Page<Job> findAllByCustomerId(ObjectId id, Pageable pageable);
 
-  public List<Job> findAllByCustomerId(int id);
+  Page<Job> findAllBySupervisorId(ObjectId id, Pageable pageable);
 
-  public List<Job> findAllBySupervisorId(int id);
-
-  public List<Job> findAllByStatus(String status);
+  Page<Job> findAllByStatus(String status, Pageable pageable);
 }

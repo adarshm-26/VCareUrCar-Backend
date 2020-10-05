@@ -1,6 +1,9 @@
 package com.car.cars;
 
 
+import org.bson.types.ObjectId;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -19,13 +22,13 @@ public class CarServices {
   }
 
   //get car bi id
-  public Car getCarById(int id) {
-    return carRepository.findById(id);
+  public Car getCarById(ObjectId id) {
+    return carRepository.findById(id).orElse(null);
   }
 
   // list of all cars belongs to one user
-  public List<Car> getCarsOfOwner(int ownerId) {
-    return carRepository.findCarsByOwnerId(ownerId);
+  public Page<Car> getCarsOfOwner(ObjectId ownerId, Pageable pageable) {
+    return carRepository.findCarsByOwnerId(ownerId, pageable);
   }
   // delete car dtetails from user
   public void removeCar(Car car) {
