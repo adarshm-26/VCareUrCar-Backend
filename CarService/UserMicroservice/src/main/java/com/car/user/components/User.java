@@ -2,12 +2,16 @@ package com.car.user.components;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "Users")
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
 
   @Id
@@ -18,8 +22,10 @@ public class User {
 
   private String type;
 
-  @Indexed
+  @Indexed(name = "email_index", unique = true)
   private String email;
+
+  private int age;
 
   private String phone;
 
@@ -72,4 +78,12 @@ public class User {
 	public String getType() {
   	return this.type;
 	}
+
+  public int getAge() {
+    return age;
+  }
+
+  public void setAge(int age) {
+    this.age = age;
+  }
 }

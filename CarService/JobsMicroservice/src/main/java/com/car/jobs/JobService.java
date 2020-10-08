@@ -36,8 +36,6 @@ public class JobService {
 	}
 
 	public Job updateJobForServicing(Job job) {
-		if (job.getServices().stream().allMatch(service -> service.getCompletedDate() != null))
-			job.setStatus("AWAITING_VERIFICATION");
 		Query query = new Query();
 		query.addCriteria(Criteria.where("id").is(job.getId()));
 		Update update = new Update();
@@ -48,6 +46,8 @@ public class JobService {
 	}
 
 	public Job updateJobForVerification(Job job){
+		if (job.getServices().stream().allMatch(service -> service.getVerifiedDate() != null))
+			job.setStatus("VERIFIED");
 		Query query = new Query();
 		query.addCriteria(Criteria.where("id").is(job.getId()));
 		Update update = new Update();

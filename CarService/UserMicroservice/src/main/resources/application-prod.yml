@@ -9,6 +9,7 @@ spring:
       host: mongod
       port: 27017
       database: CarService
+      auto-index-creation: true
 
 eureka:
   client:

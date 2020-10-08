@@ -26,8 +26,6 @@ public class JobController {
 																								 @RequestBody Job job) {
 		if ((role.equalsIgnoreCase("ROLE_customer") && job.getCustomerId().equals(new ObjectId(myId))) ||
 				role.equalsIgnoreCase("ROLE_admin")) {
-			if (service.getJob(job.getId()) != null)
-				return ResponseEntity.badRequest().build();
 			job.setStatus("BOOKED");
 			job.setBookingDate(new Date());
 			Job savedJob = service.putJob(job);
@@ -104,7 +102,7 @@ public class JobController {
 
 			if (!service.getJob(job.getId()).getStatus().equalsIgnoreCase("UNDER_SERVICE"))
 				return ResponseEntity.badRequest().build();
-			job.setStatus("VERIFIED");
+			job.setStatus("UNDER_SERVICE");
 
 			job.setServices(getUpdatedServices(service.getJob(job.getId()), job));
 

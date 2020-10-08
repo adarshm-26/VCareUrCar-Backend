@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Date;
 import java.util.List;
@@ -25,11 +24,9 @@ public class Job {
   @JsonSerialize(using = ToStringSerializer.class)
   private ObjectId carId;
 
-  @Indexed
   @JsonSerialize(using = ToStringSerializer.class)
   private ObjectId customerId;
 
-  @Indexed
   private String status;
 
   @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "dd-MM-yyyy")
@@ -47,11 +44,9 @@ public class Job {
   @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "dd-MM-yyyy")
   private Date deadlineDate;
 
-  @Indexed
   @JsonSerialize(using = ToStringSerializer.class)
   private ObjectId supervisorId;
 
-  @Indexed
   @JsonSerialize(using = ToStringSerializer.class)
   private ObjectId technicianId;
 

@@ -2,16 +2,16 @@ package com.car.user.components;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 public class UserServerController {
@@ -24,40 +24,70 @@ public class UserServerController {
 
   // 1.registration user and admin
   @PostMapping("/register")
-  public ResponseEntity<String> register(@RequestBody User user) throws Exception {
-      String email = user.getEmail();
-      if (email != null && !"".equals(email)) {
-        User obj = services.getUserByEmail(email);
-        if (obj != null) {
-          throw new Exception("User already exists with " + email);
-        }
-      }
-      User obj = services.putUser(user);
-      if (obj != null) {
+  public ResponseEntity<String> register(@RequestBody User user) {
+    if (user.getType().equals("customer")) {
+      User savedUser = services.putUser(user);
+      if (savedUser != null) {
         return ResponseEntity.ok("Registration ID: " + user.getId());
+      } else {
+        return ResponseEntity.badRequest().body("Unable to register");
       }
-      return ResponseEntity.badRequest().body("Unable to register");
+    } else {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+  }
+
+  @PostMapping("/registerEmployee")
+  public ResponseEntity<String> registerEmployee(@RequestHeader(name = "role") String role,
+                                                 @RequestBody User user) {
+    if (role.equals("ROLE_admin")) {
+      User savedUser = services.putUser(user);
+      if (savedUser != null) {
+        return ResponseEntity.ok().body("Registration ID: " + savedUser.getId());
+      } else {
+        return ResponseEntity.badRequest().body("Unable to register");
+      }
+    } else {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+  }
+
+  @PostMapping("/updatePassword")
+  public ResponseEntity<String> updatePassword(@RequestHeader(name = "role") String role,
+                                               @RequestHeader(name = "id") String myId,
+                                               @RequestBody User user) {
+    if (role.equals("ROLE_admin") || (user.getId().equals(new ObjectId(myId)))) {
+      User savedUser = services.findUser(user.getId());
+      services.removeUser(savedUser);
+      savedUser.setPassword(user.getPassword());
+      services.putUser(savedUser);
+      return ResponseEntity.ok().body("Updated password");
+    } else {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
   }
 
   //for getting user details
   @GetMapping("/{userId}")
-  public ResponseEntity<User> getUser(@RequestHeader(name = "role") String role,
+  public ResponseEntity<?> getUser(@RequestHeader(name = "role") String role,
                                       @RequestHeader(name = "id") String myId,      // <-- Just to handle the "me" endpoint
-                                      @PathVariable String userId) throws Exception {
-    if (role.equalsIgnoreCase("ROLE_admin") || userId.equalsIgnoreCase("me")) {
-      try {
-        ObjectId userIdInt = new ObjectId(userId.equalsIgnoreCase("me") ?
-                                            myId :
-                                            userId);
-        User user = services.findUser(userIdInt);
-        if (user != null) {
-          return ResponseEntity.ok().body(user);
-        } else {
-          return ResponseEntity.unprocessableEntity().build();
-        }
-      } catch (NumberFormatException e) {
+                                      @PathVariable String userId) {
+    if (role.equals("ROLE_admin") || userId.equalsIgnoreCase("me")) {
+      ObjectId userIdInt = new ObjectId(userId.equalsIgnoreCase("me") ?
+                                          myId :
+                                          userId);
+      User user = services.findUser(userIdInt);
+      if (user != null) {
+        return ResponseEntity.ok().body(user);
+      } else {
         return ResponseEntity.unprocessableEntity().build();
       }
+    } else if (!role.equals("")){
+      ObjectId userObjId = new ObjectId(userId);
+      User user = services.findUser(userObjId);
+      Map<String,String> map = new HashMap();
+      map.put("name", user.getName());
+      return ResponseEntity.ok().body(map);
     } else {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
@@ -70,11 +100,9 @@ public class UserServerController {
                                            @SortDefault.SortDefaults({
                                                @SortDefault(sort = "name", direction = Sort.Direction.ASC)
                                            }) Pageable pageable) {
-    if (role.equalsIgnoreCase("ROLE_admin")) {
+    if (role.equals("ROLE_admin") ||
+        (role.equals("ROLE_supervisor") && type.equalsIgnoreCase("technician"))) {
       Page<User> resultPage = services.getAllUsersOfType(type, pageable);
-      return ResponseEntity.ok().body(resultPage);
-    } else if (role.equalsIgnoreCase("ROLE_supervisor")) {
-      Page<User> resultPage = services.getAllUsersOfType("technician", pageable);
       return ResponseEntity.ok().body(resultPage);
     } else {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

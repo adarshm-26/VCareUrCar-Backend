@@ -1,6 +1,8 @@
 package com.car.cars;
 
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -15,6 +17,7 @@ import java.util.List;
 public class CarServerController {
 
   private final CarServices carServices;
+  private final Logger logger = LoggerFactory.getLogger(CarServerController.class);
 
   public CarServerController(CarServices carServices) {
     this.carServices = carServices;
@@ -24,8 +27,9 @@ public class CarServerController {
   public ResponseEntity<Car> getCarDetails(@RequestHeader(name = "role") String role,
                                            @RequestHeader(name = "id") String myId,
                                            @PathVariable("carId") String carId) throws Exception {
+    logger.info("Fetching carId: " + carId + " for " + role);
     Car car = carServices.getCarById(new ObjectId(carId));
-    if (role.equalsIgnoreCase("ROLE_admin") ||
+    if (!role.equalsIgnoreCase("ROLE_customer") ||
         role.equalsIgnoreCase("ROLE_customer") && car.getOwnerId().equals(new ObjectId(myId))) {
         if (car != null) {
           return ResponseEntity.accepted().body(car);

@@ -28,7 +28,6 @@ public class UserServices {
   }
 
   // Fetch User details using email
-
   public User getUserByEmail(String email) {
     return userRepository.findByEmail(email);
   }
