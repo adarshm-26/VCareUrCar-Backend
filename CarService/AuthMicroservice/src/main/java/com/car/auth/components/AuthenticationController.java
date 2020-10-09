@@ -1,5 +1,7 @@
 package com.car.auth.components;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin
 public class AuthenticationController {
 
+  private Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
   private AuthenticationManager authManager;
   private JwtTokenUtil jwtTokenUtil;
   private JwtUserDetailsService userDetailsService;
@@ -28,6 +31,7 @@ public class AuthenticationController {
     final UserDetails userDetails = userDetailsService
         .loadUserByUsername(authenticationRequest.getUsername());
     final String token = jwtTokenUtil.generateToken(userDetails);
+    logger.info("Request authenticated");
     return ResponseEntity.ok(new JwtResponse(token));
   }
 

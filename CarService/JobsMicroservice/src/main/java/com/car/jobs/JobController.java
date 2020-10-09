@@ -131,8 +131,10 @@ public class JobController {
 																					 userId);
 			Page<Job> jobs;
 			switch (role) {
-				case "ROLE_customer":
 				case "ROLE_admin":
+					jobs = service.getAllJobs(pageable);
+					break;
+				case "ROLE_customer":
 					jobs = service.getJobsByCustomer(userObjId, pageable);
 					break;
 				case "ROLE_supervisor":

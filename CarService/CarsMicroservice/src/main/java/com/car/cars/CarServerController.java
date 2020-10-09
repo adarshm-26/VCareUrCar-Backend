@@ -17,7 +17,6 @@ import java.util.List;
 public class CarServerController {
 
   private final CarServices carServices;
-  private final Logger logger = LoggerFactory.getLogger(CarServerController.class);
 
   public CarServerController(CarServices carServices) {
     this.carServices = carServices;
@@ -27,12 +26,11 @@ public class CarServerController {
   public ResponseEntity<Car> getCarDetails(@RequestHeader(name = "role") String role,
                                            @RequestHeader(name = "id") String myId,
                                            @PathVariable("carId") String carId) throws Exception {
-    logger.info("Fetching carId: " + carId + " for " + role);
     Car car = carServices.getCarById(new ObjectId(carId));
     if (!role.equalsIgnoreCase("ROLE_customer") ||
         role.equalsIgnoreCase("ROLE_customer") && car.getOwnerId().equals(new ObjectId(myId))) {
         if (car != null) {
-          return ResponseEntity.accepted().body(car);
+          return ResponseEntity.ok().body(car);
         } else {
           return ResponseEntity.badRequest().build();
         }
@@ -54,7 +52,7 @@ public class CarServerController {
                                           userId);
       Page<Car> cars = carServices.getCarsOfOwner(userIdInt, pageable);
       if (cars != null) {
-        return ResponseEntity.accepted().body(cars);
+        return ResponseEntity.ok().body(cars);
       } else {
         return ResponseEntity.unprocessableEntity().build();
       }
@@ -71,7 +69,7 @@ public class CarServerController {
         (role.equalsIgnoreCase("ROLE_customer") && car.getOwnerId().equals(new ObjectId(myId)))) {
       Car carObj = carServices.putCar(car);
       if(carObj != null){
-        return ResponseEntity.accepted().body("Added car with id: " + carObj.getId());
+        return ResponseEntity.ok().body("Added car with id: " + carObj.getId());
       } else {
         return ResponseEntity.badRequest().build();
       }
@@ -83,11 +81,12 @@ public class CarServerController {
   @PostMapping("/remove")
   public ResponseEntity<String> removeCar(@RequestHeader(name = "role") String role,
                                           @RequestHeader(name = "id") String myId,
-                                          @RequestBody Car car) throws Exception {
+                                          @RequestBody String carId) throws Exception {
+    ObjectId carObjId = new ObjectId(carId);
     if (role.equalsIgnoreCase("ROLE_customer") ||
-        (role.equalsIgnoreCase("ROLE_admin") && car.getOwnerId().equals(new ObjectId(myId)))) {
-      carServices.removeCar(car);
-      return ResponseEntity.accepted().body("Removed car with id: " + car.getId());
+        (role.equalsIgnoreCase("ROLE_admin") && carObjId.equals(new ObjectId(myId)))) {
+      carServices.removeCar(carObjId);
+      return ResponseEntity.ok().body("Removed car with id: " + carObjId.toString());
     } else {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }

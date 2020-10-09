@@ -19,9 +19,8 @@ public class JwtUserDetailsService implements UserDetailsService {
   }
 
   @Override
-  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    // Username is Email here
-    User user = userService.getUserByEmail(username);
+  public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    User user = userService.getUserByEmail(email);
 
     if (user != null) {
       List<SimpleGrantedAuthority> authority = new ArrayList<>();
@@ -32,7 +31,7 @@ public class JwtUserDetailsService implements UserDetailsService {
           authority
       );
     } else {
-      throw new UsernameNotFoundException("User not found with username: " + username);
+      throw new UsernameNotFoundException("User not found with email: " + email);
     }
   }
 }

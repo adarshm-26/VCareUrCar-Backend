@@ -16,4 +16,6 @@ public interface JobRepository extends MongoRepository<Job, ObjectId> {
   Page<Job> findAllBySupervisorId(ObjectId id, Pageable pageable);
 
   Page<Job> findAllByStatus(String status, Pageable pageable);
+
+  void deleteById(ObjectId id);
 }

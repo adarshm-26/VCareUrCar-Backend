@@ -1,5 +1,7 @@
 package com.car.user.components;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
@@ -8,6 +10,8 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.Date;
 
 @Document(collection = "Users")
 @AllArgsConstructor
@@ -29,7 +33,11 @@ public class User {
 
   private String phone;
 
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private String password;
+
+  @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "dd-MM-yyyy")
+  private Date registerDate;
 
   public ObjectId getId() {
     return id;
@@ -85,5 +93,13 @@ public class User {
 
   public void setAge(int age) {
     this.age = age;
+  }
+
+  public Date getRegisterDate() {
+    return registerDate;
+  }
+
+  public void setRegisterDate(Date registerDate) {
+    this.registerDate = registerDate;
   }
 }

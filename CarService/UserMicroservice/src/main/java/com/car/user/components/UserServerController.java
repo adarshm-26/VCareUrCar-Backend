@@ -7,9 +7,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,7 +20,6 @@ public class UserServerController {
     this.services = services;
   }
 
-  // 1.registration user and admin
   @PostMapping("/register")
   public ResponseEntity<String> register(@RequestBody User user) {
     if (user.getType().equals("customer")) {
@@ -57,10 +54,7 @@ public class UserServerController {
                                                @RequestHeader(name = "id") String myId,
                                                @RequestBody User user) {
     if (role.equals("ROLE_admin") || (user.getId().equals(new ObjectId(myId)))) {
-      User savedUser = services.findUser(user.getId());
-      services.removeUser(savedUser);
-      savedUser.setPassword(user.getPassword());
-      services.putUser(savedUser);
+      services.updatePassword(user.getId(), user.getPassword());
       return ResponseEntity.ok().body("Updated password");
     } else {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -70,7 +64,7 @@ public class UserServerController {
   //for getting user details
   @GetMapping("/{userId}")
   public ResponseEntity<?> getUser(@RequestHeader(name = "role") String role,
-                                      @RequestHeader(name = "id") String myId,      // <-- Just to handle the "me" endpoint
+                                      @RequestHeader(name = "id") String myId,
                                       @PathVariable String userId) {
     if (role.equals("ROLE_admin") || userId.equalsIgnoreCase("me")) {
       ObjectId userIdInt = new ObjectId(userId.equalsIgnoreCase("me") ?
@@ -82,10 +76,10 @@ public class UserServerController {
       } else {
         return ResponseEntity.unprocessableEntity().build();
       }
-    } else if (!role.equals("")){
+    } else if (!role.equals("ROLE_customer")){
       ObjectId userObjId = new ObjectId(userId);
       User user = services.findUser(userObjId);
-      Map<String,String> map = new HashMap();
+      Map<String,String> map = new HashMap<>();
       map.put("name", user.getName());
       return ResponseEntity.ok().body(map);
     } else {
@@ -104,6 +98,17 @@ public class UserServerController {
         (role.equals("ROLE_supervisor") && type.equalsIgnoreCase("technician"))) {
       Page<User> resultPage = services.getAllUsersOfType(type, pageable);
       return ResponseEntity.ok().body(resultPage);
+    } else {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+  }
+
+  @PostMapping("/remove")
+  public ResponseEntity<String> removeUser(@RequestHeader(name = "role") String role,
+                                           @RequestBody String id) {
+    if (role.equals("ROLE_admin")) {
+      services.removeUser(new ObjectId(id));
+      return ResponseEntity.ok().body("Successfully removed user");
     } else {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }

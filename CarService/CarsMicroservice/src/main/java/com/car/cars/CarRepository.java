@@ -11,5 +11,8 @@ import java.util.Optional;
 public interface CarRepository extends MongoRepository<Car, ObjectId> {
 
   Optional<Car> findById(ObjectId id);
+
   Page<Car> findCarsByOwnerId(ObjectId ownerId, Pageable pageable);
+
+  void deleteById(ObjectId id);
 }
