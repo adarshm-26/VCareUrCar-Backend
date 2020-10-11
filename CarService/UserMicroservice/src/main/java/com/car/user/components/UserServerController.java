@@ -64,8 +64,8 @@ public class UserServerController {
   //for getting user details
   @GetMapping("/{userId}")
   public ResponseEntity<?> getUser(@RequestHeader(name = "role") String role,
-                                      @RequestHeader(name = "id") String myId,
-                                      @PathVariable String userId) {
+                                   @RequestHeader(name = "id") String myId,
+                                   @PathVariable String userId) {
     if (role.equals("ROLE_admin") || userId.equalsIgnoreCase("me")) {
       ObjectId userIdInt = new ObjectId(userId.equalsIgnoreCase("me") ?
                                           myId :

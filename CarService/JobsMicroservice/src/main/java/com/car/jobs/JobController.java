@@ -1,6 +1,9 @@
 package com.car.jobs;
 
+import com.razorpay.Order;
+import com.razorpay.RazorpayClient;
 import org.bson.types.ObjectId;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -146,7 +149,7 @@ public class JobController {
 				default:
 					return ResponseEntity.badRequest().build();
 			}
-			return ResponseEntity.ok(jobs);        // Send list even if it is empty
+			return ResponseEntity.ok(jobs);
 		} else {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
@@ -221,6 +224,28 @@ public class JobController {
 		if (role.equalsIgnoreCase("ROLE_admin")) {
 			service.deleteJob(job.getId());
 			return ResponseEntity.ok("Deleted Successfully");
+		} else {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+	}
+
+	@PostMapping("/pay/initiate")
+	public ResponseEntity<?> initiatePayment(@RequestHeader(name = "role") String role,
+																					 @RequestBody Properties paymentDetails) throws Exception {
+		if (role.equals("ROLE_admin") || role.equals("ROLE_customer")) {
+			Properties result = service.initiatePayment(paymentDetails);
+			return ResponseEntity.ok().body(result);
+		} else {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+	}
+
+	@PostMapping("/pay/verify")
+	public ResponseEntity<?> verifyPayment(@RequestHeader(name = "role") String role,
+																				 @RequestBody Properties signatures) throws Exception {
+		if (role.equals("ROLE_admin") || role.equals("ROLE_customer")) {
+			boolean result = service.verifyPayment(signatures);
+			return ResponseEntity.ok().body(result);
 		} else {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
