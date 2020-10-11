@@ -46,7 +46,7 @@ public class JobService {
 	}
 	
 	public Job putJob(Job job) {
-		logger.info("Saving new job {}", job.getId().toString());
+		logger.info("Saving new job with {} services", job.getServices().size());
 		return jobrepo.save(job);
 	}
 

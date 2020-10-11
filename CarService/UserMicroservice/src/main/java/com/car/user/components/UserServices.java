@@ -30,7 +30,7 @@ public class UserServices {
   }
 
   public User putUser(User user) {
-    logger.info("Saving details of user {}", user.getId().toString());
+    logger.info("Saving details of user {}", user.getEmail());
     user.setRegisterDate(new Date());
     user.setPassword(passwordEncoder.encode(user.getPassword()));
     return userRepository.save(user);
