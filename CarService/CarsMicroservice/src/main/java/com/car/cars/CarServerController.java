@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Properties;
 
 @RestController
 public class CarServerController {
@@ -81,8 +82,8 @@ public class CarServerController {
   @PostMapping("/remove")
   public ResponseEntity<String> removeCar(@RequestHeader(name = "role") String role,
                                           @RequestHeader(name = "id") String myId,
-                                          @RequestBody String carId) throws Exception {
-    ObjectId carObjId = new ObjectId(carId);
+                                          @RequestBody Properties carProps) throws Exception {
+    ObjectId carObjId = new ObjectId(carProps.getProperty("id"));
     if (role.equalsIgnoreCase("ROLE_customer") ||
         (role.equalsIgnoreCase("ROLE_admin") && carObjId.equals(new ObjectId(myId)))) {
       carServices.removeCar(carObjId);

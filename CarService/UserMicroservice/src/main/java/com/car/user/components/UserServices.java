@@ -75,4 +75,21 @@ public class UserServices {
       return null;
     }
   }
+
+  public User updateCode(int code,ObjectId id){
+    Query query = new Query();
+    query.addCriteria(Criteria.where("id").is(id));
+    Update update = new Update();
+    update.set("verificationcode", code);
+    logger.info("Updating verification to user", id.toString());
+    return mongoTemplate.findAndModify(query, update, User.class);
+  }
+  public User updateEnable(ObjectId id){
+    Query query = new Query();
+    query.addCriteria(Criteria.where("id").is(id));
+    Update update = new Update();
+    update.set("enable", true);
+    logger.info("Updating verification to user", id.toString());
+    return mongoTemplate.findAndModify(query, update, User.class);
+  }
 }

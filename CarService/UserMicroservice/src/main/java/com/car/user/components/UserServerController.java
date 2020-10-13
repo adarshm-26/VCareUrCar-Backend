@@ -31,9 +31,7 @@ public class UserServerController {
     user1=services.findUser(new ObjectId(myId));
     if(user1!=null){
       if(user.getVerificationcode()==user1.getVerificationcode()){
-        services.removeUser(user1.getId());
-        user1.setEnable(true);
-        services.putUser(user1);
+        services.updateEnable(new ObjectId(myId));
         return ResponseEntity.ok("verified Registration ID: " + user1.getId());
       }else{
         return ResponseEntity.badRequest().body("entered wrong");
@@ -50,16 +48,14 @@ public class UserServerController {
     if(user!=null) {
       Map<String, Object> model = new HashMap<>();
 	  int code=(int)Math.floor(Math.random()*100000);
-	  services.removeUser(user.getId());
-      user.setVerificationcode(code);
-      services.putUser(user);
+	  user=services.updateCode(code,new ObjectId(myId));
       MailRequest mailRequest = new MailRequest();
       mailRequest.setName("vcareurcar");
       mailRequest.setFrom("vacareurcar@gmail.com");
       mailRequest.setSubject("verify your email");
       mailRequest.setTo(user.getEmail());
       model.put("Name", mailRequest.getName());
-      model.put("code", ""+user.getVerificationcode());
+      model.put("code", ""+code);
       model.put("location", "team vcareurcar");
 
       MailResponse mailResponse = emailService.sendEmail(mailRequest, model);
