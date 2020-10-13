@@ -16,6 +16,8 @@ public class Car {
   @Id
   private ObjectId id;
 
+  private String brand;
+
   private String model;
 
   @JsonSerialize(using = ToStringSerializer.class)
@@ -27,6 +29,14 @@ public class Car {
 
   public void setId(ObjectId id) {
     this.id = id;
+  }
+
+  public String getBrand() {
+    return brand;
+  }
+
+  public void setBrand(String brand) {
+    this.brand = brand;
   }
 
   public String getModel() {

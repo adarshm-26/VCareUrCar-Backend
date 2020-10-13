@@ -1,0 +1,9 @@
+com\car\user\components\emailservice\MailRequest.class
+com\car\user\components\UserRepository.class
+com\car\user\components\UserServerController.class
+com\car\user\components\emailservice\ApiConfig.class
+com\car\user\UserServer.class
+com\car\user\components\UserServices.class
+com\car\user\components\User.class
+com\car\user\components\emailservice\EmailService.class
+com\car\user\components\emailservice\MailResponse.class

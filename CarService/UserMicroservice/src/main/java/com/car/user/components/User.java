@@ -39,6 +39,26 @@ public class User {
   @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "dd-MM-yyyy")
   private Date registerDate;
 
+  private boolean enable;
+
+  private int verificationcode;
+
+  public boolean isEnable() {
+    return enable;
+  }
+
+  public int getVerificationcode() {
+    return verificationcode;
+  }
+
+  public void setVerificationcode(int verficationcode) {
+    this.verificationcode = verficationcode;
+  }
+
+  public void setEnable(boolean enable) {
+    this.enable = enable;
+  }
+
   public ObjectId getId() {
     return id;
   }

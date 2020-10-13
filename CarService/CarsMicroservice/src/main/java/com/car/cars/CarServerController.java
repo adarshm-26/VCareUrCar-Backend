@@ -91,4 +91,22 @@ public class CarServerController {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
   }
+  @GetMapping("/allcars")
+  public ResponseEntity<Page<Car>> getAllCars(@RequestHeader(name = "role") String role,
+                                               @RequestHeader(name = "id") String myId,
+                                               @SortDefault.SortDefaults({
+                                                       @SortDefault(sort = "id", direction = Sort.Direction.DESC)
+                                               }) Pageable pageable) throws Exception {
+    if(!role.equalsIgnoreCase("ROLE_customer") ) {
+      ObjectId userIdInt = new ObjectId(myId);
+      Page<Car> cars = carServices.getAllCars();
+      if (cars != null) {
+        return ResponseEntity.ok().body(cars);
+      } else {
+        return ResponseEntity.unprocessableEntity().build();
+      }
+    } else {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+  }
 }
