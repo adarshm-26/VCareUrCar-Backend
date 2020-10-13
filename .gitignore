@@ -1,6 +1,27 @@
 
-CarService/CloudGatewayMicroservice/.idea/
+CarService/CloudGatewayMicroservice
 
 mongo_data/
-
 mongodata/
+
+
+CarService/birt-engine-workspace/log/
+
+*.iml
+
+CarService/CarsMicroservice/.idea
+CarService/EurekaMicroservice/.idea
+CarService/JobsMicroservice/.idea
+CarService/ReportsMicroservice/.idea
+CarService/UserMicroservice/.idea
+CarService/AuthMicroservice/.idea
+CarService/birt-engine-workspace/.idea
+
+
+CarService/CarsMicroservice/target
+CarService/EurekaMicroservice/target
+CarService/JobsMicroservice/target
+CarService/ReportsMicroservice/target
+CarService/UserMicroservice/target
+CarService/AuthMicroservice/target
+CarService/birt-engine-workspace/target

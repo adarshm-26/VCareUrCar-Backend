@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.innoventsolutions.birt.runtime:org.sat4j.pb_2.3.5.v201404071733:4.8.0">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/innoventsolutions/birt/runtime/org.sat4j.pb_2.3.5.v201404071733/4.8.0/org.sat4j.pb_2.3.5.v201404071733-4.8.0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/innoventsolutions/birt/runtime/org.sat4j.pb_2.3.5.v201404071733/4.8.0/org.sat4j.pb_2.3.5.v201404071733-4.8.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/innoventsolutions/birt/runtime/org.sat4j.pb_2.3.5.v201404071733/4.8.0/org.sat4j.pb_2.3.5.v201404071733-4.8.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

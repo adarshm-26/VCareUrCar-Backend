@@ -25,6 +25,16 @@ public class JwtRequestFilter extends OncePerRequestFilter {
   }
 
   @Override
+  protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+    if (request.getRequestURI().equals("/authenticate") ||
+      request.getRequestURI().equals("/user/register"))
+      return true;
+    return super.shouldNotFilter(request);
+  }
+
+
+
+  @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
       throws ServletException, IOException {
 

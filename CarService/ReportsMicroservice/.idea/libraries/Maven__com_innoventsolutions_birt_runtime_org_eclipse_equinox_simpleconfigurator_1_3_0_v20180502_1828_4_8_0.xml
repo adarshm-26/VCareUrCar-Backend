@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.innoventsolutions.birt.runtime:org.eclipse.equinox.simpleconfigurator_1.3.0.v20180502-1828:4.8.0">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/innoventsolutions/birt/runtime/org.eclipse.equinox.simpleconfigurator_1.3.0.v20180502-1828/4.8.0/org.eclipse.equinox.simpleconfigurator_1.3.0.v20180502-1828-4.8.0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/innoventsolutions/birt/runtime/org.eclipse.equinox.simpleconfigurator_1.3.0.v20180502-1828/4.8.0/org.eclipse.equinox.simpleconfigurator_1.3.0.v20180502-1828-4.8.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/innoventsolutions/birt/runtime/org.eclipse.equinox.simpleconfigurator_1.3.0.v20180502-1828/4.8.0/org.eclipse.equinox.simpleconfigurator_1.3.0.v20180502-1828-4.8.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

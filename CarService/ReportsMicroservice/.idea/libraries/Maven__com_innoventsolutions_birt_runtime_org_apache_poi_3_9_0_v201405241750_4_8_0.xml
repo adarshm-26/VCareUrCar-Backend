@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.innoventsolutions.birt.runtime:org.apache.poi_3.9.0.v201405241750:4.8.0">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/innoventsolutions/birt/runtime/org.apache.poi_3.9.0.v201405241750/4.8.0/org.apache.poi_3.9.0.v201405241750-4.8.0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/innoventsolutions/birt/runtime/org.apache.poi_3.9.0.v201405241750/4.8.0/org.apache.poi_3.9.0.v201405241750-4.8.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/innoventsolutions/birt/runtime/org.apache.poi_3.9.0.v201405241750/4.8.0/org.apache.poi_3.9.0.v201405241750-4.8.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

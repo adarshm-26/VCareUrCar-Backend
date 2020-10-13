@@ -1,8 +1,6 @@
 package com.car.cars;
 
 import org.bson.types.ObjectId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -10,8 +8,6 @@ import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 import java.util.Properties;
 
 @RestController
@@ -92,7 +88,7 @@ public class CarServerController {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
   }
-  @GetMapping("/allcars")
+  @GetMapping("/all")
   public ResponseEntity<Page<Car>> getAllCars(@RequestHeader(name = "role") String role,
                                                @RequestHeader(name = "id") String myId,
                                                @SortDefault.SortDefaults({

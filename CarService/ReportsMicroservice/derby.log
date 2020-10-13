@@ -1,0 +1,29 @@
+----------------------------------------------------------------
+Tue Oct 13 10:44:57 IST 2020:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.11.1.1 - (1616546): instance a816c00e-0175-205e-dd3c-0000137101b8 
+on database directory memory:/mnt/dataPart/Documents/Atom_Files/NeuralHack/carservice-backend/CarService/ReportsMicroservice/7625896c-ac8b-4de5-a5e7-c194f7d4d352 with class loader sun.misc.Launcher$AppClassLoader@18b4aac2 
+Loaded from file:/home/adarshm26/.m2/repository/com/innoventsolutions/birt/runtime/org.apache.derby_10.11.1.1_v201605202053/4.8.0/org.apache.derby_10.11.1.1_v201605202053-4.8.0.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_265-b01
+user.dir=/mnt/dataPart/Documents/Atom_Files/NeuralHack/carservice-backend/CarService/ReportsMicroservice
+os.name=Linux
+os.arch=amd64
+os.version=5.8.6-1-MANJARO
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Tue Oct 13 10:44:57 IST 2020:
+Shutting down instance a816c00e-0175-205e-dd3c-0000137101b8 on database directory memory:/mnt/dataPart/Documents/Atom_Files/NeuralHack/carservice-backend/CarService/ReportsMicroservice/7625896c-ac8b-4de5-a5e7-c194f7d4d352 with class loader sun.misc.Launcher$AppClassLoader@18b4aac2 
+----------------------------------------------------------------
+Tue Oct 13 10:44:57 IST 2020:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.11.1.1 - (1616546): instance f55fc0a6-0175-205e-dd3c-0000137101b8 
+on database directory memory:/mnt/dataPart/Documents/Atom_Files/NeuralHack/carservice-backend/CarService/ReportsMicroservice/7625896c-ac8b-4de5-a5e7-c194f7d4d352 with class loader sun.misc.Launcher$AppClassLoader@18b4aac2 
+Loaded from file:/home/adarshm26/.m2/repository/com/innoventsolutions/birt/runtime/org.apache.derby_10.11.1.1_v201605202053/4.8.0/org.apache.derby_10.11.1.1_v201605202053-4.8.0.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_265-b01
+user.dir=/mnt/dataPart/Documents/Atom_Files/NeuralHack/carservice-backend/CarService/ReportsMicroservice
+os.name=Linux
+os.arch=amd64
+os.version=5.8.6-1-MANJARO
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
