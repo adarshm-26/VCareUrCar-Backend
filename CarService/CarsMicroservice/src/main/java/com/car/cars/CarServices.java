@@ -18,7 +18,7 @@ public class CarServices {
   }
 
   public Car putCar(Car car) {
-    logger.info("Saving details of car " + car.getId().toString());
+    
     return carRepository.save(car);
   }
 
@@ -33,7 +33,11 @@ public class CarServices {
   }
 
   public void removeCar(ObjectId carId) {
-    logger.info("Removing car " + carId.toString());
+    logger.info("Removing car " );
     carRepository.deleteById(carId);
+  }
+  public Page<Car> getAllCars(){
+    logger.info("Fetched all cars ");
+    return (Page<Car>) carRepository.findAll();
   }
 }

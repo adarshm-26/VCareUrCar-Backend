@@ -1,6 +1,10 @@
 package com.car.user.components;
 
+import com.car.user.components.emailservice.EmailService;
+import com.car.user.components.emailservice.MailRequest;
+import com.car.user.components.emailservice.MailResponse;
 import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -13,11 +17,52 @@ import java.util.Map;
 
 @RestController
 public class UserServerController {
+  @Autowired
+  private UserServices services;
 
-  private final UserServices services;
+  @Autowired
+  private EmailService emailService;
 
-  public UserServerController(UserServices services) {
-    this.services = services;
+
+
+  @PostMapping("/validatemail")
+  public ResponseEntity<String> validateEmail(@RequestHeader(name = "id") String myId,@RequestBody User user){
+    User user1=null;
+    user1=services.findUser(new ObjectId(myId));
+    if(user1!=null){
+      if(user.getVerificationcode()==user1.getVerificationcode()){
+        services.updateEnable(new ObjectId(myId));
+        return ResponseEntity.ok("verified Registration ID: " + user1.getId());
+      }else{
+        return ResponseEntity.badRequest().body("entered wrong");
+      }
+    }else{
+      return ResponseEntity.badRequest().body("user not found"+user1.getEmail());
+    }
+  }
+
+  @PostMapping("/sendmail")
+  public ResponseEntity<String> sendEmail(@RequestHeader(name = "id") String myId){
+    User user=null;
+    user=services.findUser(new ObjectId(myId));
+    if(user!=null) {
+      Map<String, Object> model = new HashMap<>();
+	  int code=(int)Math.floor(Math.random()*100000);
+	  user=services.updateCode(code,new ObjectId(myId));
+      MailRequest mailRequest = new MailRequest();
+      mailRequest.setName("vcareurcar");
+      mailRequest.setFrom("vacareurcar@gmail.com");
+      mailRequest.setSubject("verify your email");
+      mailRequest.setTo(user.getEmail());
+      model.put("Name", mailRequest.getName());
+      model.put("code", ""+code);
+      model.put("location", "team vcareurcar");
+
+      MailResponse mailResponse = emailService.sendEmail(mailRequest, model);
+      return ResponseEntity.ok("sent mail to email ID: " + user.getEmail());
+    }else{
+      return ResponseEntity.badRequest().body("user not found");
+    }
   }
 
   @PostMapping("/register")
