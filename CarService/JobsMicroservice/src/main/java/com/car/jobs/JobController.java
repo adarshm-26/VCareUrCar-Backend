@@ -1,6 +1,9 @@
 package com.car.jobs;
 
+import com.razorpay.Order;
+import com.razorpay.RazorpayClient;
 import org.bson.types.ObjectId;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,8 +29,6 @@ public class JobController {
 																								 @RequestBody Job job) {
 		if ((role.equalsIgnoreCase("ROLE_customer") && job.getCustomerId().equals(new ObjectId(myId))) ||
 				role.equalsIgnoreCase("ROLE_admin")) {
-			if (service.getJob(job.getId()) != null)
-				return ResponseEntity.badRequest().build();
 			job.setStatus("BOOKED");
 			job.setBookingDate(new Date());
 			Job savedJob = service.putJob(job);
@@ -104,7 +105,7 @@ public class JobController {
 
 			if (!service.getJob(job.getId()).getStatus().equalsIgnoreCase("UNDER_SERVICE"))
 				return ResponseEntity.badRequest().build();
-			job.setStatus("VERIFIED");
+			job.setStatus("UNDER_SERVICE");
 
 			job.setServices(getUpdatedServices(service.getJob(job.getId()), job));
 
@@ -133,8 +134,10 @@ public class JobController {
 																					 userId);
 			Page<Job> jobs;
 			switch (role) {
-				case "ROLE_customer":
 				case "ROLE_admin":
+					jobs = service.getAllJobs(pageable);
+					break;
+				case "ROLE_customer":
 					jobs = service.getJobsByCustomer(userObjId, pageable);
 					break;
 				case "ROLE_supervisor":
@@ -146,7 +149,7 @@ public class JobController {
 				default:
 					return ResponseEntity.badRequest().build();
 			}
-			return ResponseEntity.ok(jobs);        // Send list even if it is empty
+			return ResponseEntity.ok(jobs);
 		} else {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
@@ -221,6 +224,28 @@ public class JobController {
 		if (role.equalsIgnoreCase("ROLE_admin")) {
 			service.deleteJob(job.getId());
 			return ResponseEntity.ok("Deleted Successfully");
+		} else {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+	}
+
+	@PostMapping("/pay/initiate")
+	public ResponseEntity<?> initiatePayment(@RequestHeader(name = "role") String role,
+																					 @RequestBody Properties paymentDetails) throws Exception {
+		if (role.equals("ROLE_admin") || role.equals("ROLE_customer")) {
+			Properties result = service.initiatePayment(paymentDetails);
+			return ResponseEntity.ok().body(result);
+		} else {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+	}
+
+	@PostMapping("/pay/verify")
+	public ResponseEntity<?> verifyPayment(@RequestHeader(name = "role") String role,
+																				 @RequestBody Properties signatures) throws Exception {
+		if (role.equals("ROLE_admin") || role.equals("ROLE_customer")) {
+			boolean result = service.verifyPayment(signatures);
+			return ResponseEntity.ok().body(result);
 		} else {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}

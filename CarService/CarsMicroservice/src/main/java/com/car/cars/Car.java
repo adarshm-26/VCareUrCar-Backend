@@ -4,19 +4,22 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document (collection = "Cars")
+@CompoundIndex(name = "owner_car_index", def = "{'id':1, 'ownerId':1}", unique = true)
 public class Car {
 
   @JsonSerialize(using = ToStringSerializer.class)
   @Id
   private ObjectId id;
 
+  private String brand;
+
   private String model;
 
-  @Indexed
   @JsonSerialize(using = ToStringSerializer.class)
   private ObjectId ownerId;
 
@@ -26,6 +29,14 @@ public class Car {
 
   public void setId(ObjectId id) {
     this.id = id;
+  }
+
+  public String getBrand() {
+    return brand;
+  }
+
+  public void setBrand(String brand) {
+    this.brand = brand;
   }
 
   public String getModel() {

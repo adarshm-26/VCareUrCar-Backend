@@ -8,8 +8,7 @@ import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import java.util.Properties;
 
 @RestController
 public class CarServerController {
@@ -25,10 +24,10 @@ public class CarServerController {
                                            @RequestHeader(name = "id") String myId,
                                            @PathVariable("carId") String carId) throws Exception {
     Car car = carServices.getCarById(new ObjectId(carId));
-    if (role.equalsIgnoreCase("ROLE_admin") ||
+    if (!role.equalsIgnoreCase("ROLE_customer") ||
         role.equalsIgnoreCase("ROLE_customer") && car.getOwnerId().equals(new ObjectId(myId))) {
         if (car != null) {
-          return ResponseEntity.accepted().body(car);
+          return ResponseEntity.ok().body(car);
         } else {
           return ResponseEntity.badRequest().build();
         }
@@ -50,7 +49,7 @@ public class CarServerController {
                                           userId);
       Page<Car> cars = carServices.getCarsOfOwner(userIdInt, pageable);
       if (cars != null) {
-        return ResponseEntity.accepted().body(cars);
+        return ResponseEntity.ok().body(cars);
       } else {
         return ResponseEntity.unprocessableEntity().build();
       }
@@ -67,7 +66,7 @@ public class CarServerController {
         (role.equalsIgnoreCase("ROLE_customer") && car.getOwnerId().equals(new ObjectId(myId)))) {
       Car carObj = carServices.putCar(car);
       if(carObj != null){
-        return ResponseEntity.accepted().body("Added car with id: " + carObj.getId());
+        return ResponseEntity.ok().body("Added car with id: " + carObj.getId());
       } else {
         return ResponseEntity.badRequest().build();
       }
@@ -79,11 +78,30 @@ public class CarServerController {
   @PostMapping("/remove")
   public ResponseEntity<String> removeCar(@RequestHeader(name = "role") String role,
                                           @RequestHeader(name = "id") String myId,
-                                          @RequestBody Car car) throws Exception {
+                                          @RequestBody Properties carProps) throws Exception {
+    ObjectId carObjId = new ObjectId(carProps.getProperty("id"));
     if (role.equalsIgnoreCase("ROLE_customer") ||
-        (role.equalsIgnoreCase("ROLE_admin") && car.getOwnerId().equals(new ObjectId(myId)))) {
-      carServices.removeCar(car);
-      return ResponseEntity.accepted().body("Removed car with id: " + car.getId());
+        (role.equalsIgnoreCase("ROLE_admin") && carObjId.equals(new ObjectId(myId)))) {
+      carServices.removeCar(carObjId);
+      return ResponseEntity.ok().body("Removed car with id: " + carObjId.toString());
+    } else {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+  }
+  @GetMapping("/all")
+  public ResponseEntity<Page<Car>> getAllCars(@RequestHeader(name = "role") String role,
+                                               @RequestHeader(name = "id") String myId,
+                                               @SortDefault.SortDefaults({
+                                                       @SortDefault(sort = "id", direction = Sort.Direction.DESC)
+                                               }) Pageable pageable) throws Exception {
+    if(!role.equalsIgnoreCase("ROLE_customer") ) {
+      ObjectId userIdInt = new ObjectId(myId);
+      Page<Car> cars = carServices.getAllCars();
+      if (cars != null) {
+        return ResponseEntity.ok().body(cars);
+      } else {
+        return ResponseEntity.unprocessableEntity().build();
+      }
     } else {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }

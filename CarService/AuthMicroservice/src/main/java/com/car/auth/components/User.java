@@ -1,5 +1,7 @@
 package com.car.auth.components;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -8,10 +10,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "Users")
 public class User {
   @Id
+  @JsonSerialize(using = ToStringSerializer.class)
   private ObjectId id;
   private String name;
   private String type;
-  @Indexed
+  @Indexed(unique = true)
   private String email;
   private String phone;
   private String password;
