@@ -25,11 +25,8 @@ public class HeaderFilter extends ZuulFilter {
   @Override
   public boolean shouldFilter() {
     String uri = RequestContext.getCurrentContext().getRequest().getRequestURI();
-    if (uri.equalsIgnoreCase("/authenticate")) {
-      logger.info("Skipping filter");
-      return false;
-    }
-    else if (uri.equalsIgnoreCase("/user/register")) {
+    if (uri.equalsIgnoreCase("/authenticate") ||
+        uri.equalsIgnoreCase("/user/register")) {
       logger.info("Skipping filter");
       return false;
     }

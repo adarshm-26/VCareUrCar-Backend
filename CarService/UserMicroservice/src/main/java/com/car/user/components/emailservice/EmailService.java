@@ -28,10 +28,8 @@ public class EmailService {
 		MailResponse response = new MailResponse();
 		MimeMessage message = sender.createMimeMessage();
 		try {
-			// set mediaType
 			MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
 					StandardCharsets.UTF_8.name());
-			// add attachment
 
 			Template t = config.getTemplate("email-template.ftl");
 			String html = FreeMarkerTemplateUtils.processTemplateIntoString(t, model);
@@ -42,11 +40,11 @@ public class EmailService {
 			helper.setFrom(request.getFrom());
 			sender.send(message);
 
-			response.setMessage("mail send to : " + request.getTo());
+			response.setMessage("Mail send to : " + request.getTo());
 			response.setStatus(Boolean.TRUE);
 
 		} catch (MessagingException | IOException | TemplateException e) {
-			response.setMessage("Mail Sending failure : "+e.getMessage());
+			response.setMessage("Mail Sending failure : " + e.getMessage());
 			response.setStatus(Boolean.FALSE);
 		}
 
