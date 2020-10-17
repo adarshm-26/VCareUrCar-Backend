@@ -1,0 +1,37 @@
+server:
+  port: 1112
+
+spring:
+  application:
+    name: auth-service
+  data:
+    mongodb:
+      host: mongod
+      port: 27017
+      database: CarService
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://eureka:1111/eureka/
+  instance:
+    leaseRenewalIntervalInSeconds: 5
+
+zuul:
+  routes:
+    user-service:
+      path: /user/**
+      url: http://user:1113
+      stripPrefix: true
+    jobs-service:
+      path: /jobs/**
+      url: http://job:1114
+      stripPrefix: true
+    car-service:
+      path: /cars/**
+      url: http://car:1115
+      stripPrefix: true
+    report-service:
+      path: /reports/**
+      url: http://report:1116
+      stripPrefix: true

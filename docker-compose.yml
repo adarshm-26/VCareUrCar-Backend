@@ -26,12 +26,14 @@ services:
       - user
       - job
       - car
+      - report
     environment:
       - "JAVA_OPTS=-Dspring.profiles.active=prod"
   user:
     image: vcareurcar.user
     ports:
       - 1113:1113
+      - 587:587
     depends_on:
       - mongod
       - eureka
@@ -50,6 +52,15 @@ services:
     image: vcareurcar.car
     ports:
       - 1115:1115
+    depends_on:
+      - mongod
+      - eureka
+    environment:
+      - "JAVA_OPTS=-Dspring.profiles.active=prod"
+  report:
+    image: vcareurcar.report
+    ports: 
+      - 1116:1116
     depends_on:
       - mongod
       - eureka

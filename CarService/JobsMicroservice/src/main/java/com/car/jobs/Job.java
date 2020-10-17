@@ -29,19 +29,19 @@ public class Job {
 
   private String status;
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "dd-MM-yyyy")
+  @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd")
   private Date bookingDate;
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "dd-MM-yyyy")
+  @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd")
   private Date acceptedDate;
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "dd-MM-yyyy")
+  @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd")
   private Date appointedDate;
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "dd-MM-yyyy")
+  @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd")
   private Date paymentReceiveDate;
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "dd-MM-yyyy")
+  @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd")
   private Date deadlineDate;
 
   @JsonSerialize(using = ToStringSerializer.class)
