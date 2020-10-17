@@ -3,16 +3,6 @@ server:
 
 spring:
   application:
-    name: reports-service
-  data:
-    mongodb:
-      port: 27017
-      host: localhost
-      database: CarService
-
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: http://localhost:1111/eureka/
-  instance:
-    leaseRenewalIntervalInSeconds: 5
+    name: report-service
+  profiles:
+    active: dev

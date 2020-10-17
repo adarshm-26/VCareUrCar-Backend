@@ -3,3 +3,17 @@ spring:
     name: user-service
   profiles:
     active: dev
+  mail:
+    default-encoding: UTF-8
+    host: smtp.gmail.com
+    username: vacareurcar@gmail.com
+    password: ajay1999
+    port: 587
+    protocol: smtp
+    test-connection: false
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true

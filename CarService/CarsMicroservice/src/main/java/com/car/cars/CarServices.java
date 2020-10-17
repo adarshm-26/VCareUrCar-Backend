@@ -36,8 +36,8 @@ public class CarServices {
     logger.info("Removing car " );
     carRepository.deleteById(carId);
   }
-  public Page<Car> getAllCars(){
+  public Page<Car> getAllCars(Pageable pageable){
     logger.info("Fetched all cars ");
-    return (Page<Car>) carRepository.findAll();
+    return carRepository.findAll(pageable);
   }
 }

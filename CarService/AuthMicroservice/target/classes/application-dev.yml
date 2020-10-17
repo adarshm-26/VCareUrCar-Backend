@@ -31,7 +31,7 @@ zuul:
       path: /cars/**
       url: http://localhost:1115
       stripPrefix: true
-    reports-service:
+    report-service:
       path: /reports/**
       url: http://localhost:1116
       stripPrefix: true

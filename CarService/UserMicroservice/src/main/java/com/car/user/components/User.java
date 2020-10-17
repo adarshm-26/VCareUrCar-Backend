@@ -36,7 +36,7 @@ public class User {
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private String password;
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "dd-MM-yyyy")
+  @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "YYYY-MM-dd")
   private Date registerDate;
 
   private boolean enable;

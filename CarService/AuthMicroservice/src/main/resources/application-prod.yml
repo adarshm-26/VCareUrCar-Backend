@@ -31,3 +31,7 @@ zuul:
       path: /cars/**
       url: http://car:1115
       stripPrefix: true
+    report-service:
+      path: /reports/**
+      url: http://report:1116
+      stripPrefix: true

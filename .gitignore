@@ -25,3 +25,5 @@ CarService/ReportsMicroservice/target
 CarService/UserMicroservice/target
 CarService/AuthMicroservice/target
 CarService/birt-engine-workspace/target
+
+CarService/.idea
