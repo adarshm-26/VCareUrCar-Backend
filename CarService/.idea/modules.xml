@@ -4,10 +4,11 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/CarService.iml" filepath="$PROJECT_DIR$/.idea/CarService.iml" />
       <module fileurl="file://$PROJECT_DIR$/AuthMicroservice/VCareUrCar.iml" filepath="$PROJECT_DIR$/AuthMicroservice/VCareUrCar.iml" />
-      <module fileurl="file://$PROJECT_DIR$/CarsMicroservice/VCareUrCar (1).iml" filepath="$PROJECT_DIR$/CarsMicroservice/VCareUrCar (1).iml" />
-      <module fileurl="file://$PROJECT_DIR$/JobsMicroservice/VCareUrCar (2).iml" filepath="$PROJECT_DIR$/JobsMicroservice/VCareUrCar (2).iml" />
-      <module fileurl="file://$PROJECT_DIR$/UserMicroservice/VCareUrCar (3).iml" filepath="$PROJECT_DIR$/UserMicroservice/VCareUrCar (3).iml" />
-      <module fileurl="file://$PROJECT_DIR$/EurekaMicroservice/VCareUrCar (4).iml" filepath="$PROJECT_DIR$/EurekaMicroservice/VCareUrCar (4).iml" />
+      <module fileurl="file://$PROJECT_DIR$/AuthMicroservice/VCareUrCar (1).iml" filepath="$PROJECT_DIR$/AuthMicroservice/VCareUrCar (1).iml" />
+      <module fileurl="file://$PROJECT_DIR$/CarsMicroservice/VCareUrCar (2).iml" filepath="$PROJECT_DIR$/CarsMicroservice/VCareUrCar (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/EurekaMicroservice/VCareUrCar (3).iml" filepath="$PROJECT_DIR$/EurekaMicroservice/VCareUrCar (3).iml" />
+      <module fileurl="file://$PROJECT_DIR$/JobsMicroservice/VCareUrCar (4).iml" filepath="$PROJECT_DIR$/JobsMicroservice/VCareUrCar (4).iml" />
+      <module fileurl="file://$PROJECT_DIR$/UserMicroservice/VCareUrCar (5).iml" filepath="$PROJECT_DIR$/UserMicroservice/VCareUrCar (5).iml" />
     </modules>
   </component>
 </project>
