@@ -81,14 +81,14 @@ public class CarServerController {
                                           @RequestBody Properties carProps) throws Exception {
     ObjectId carObjId = new ObjectId(carProps.getProperty("id"));
     if (role.equalsIgnoreCase("ROLE_customer") ||
-        (role.equalsIgnoreCase("ROLE_admin") && carObjId.equals(new ObjectId(myId)))) {
+        (role.equalsIgnoreCase("ROLE_admin"))) {
       carServices.removeCar(carObjId);
       return ResponseEntity.ok().body("Removed car with id: " + carObjId.toString());
     } else {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
   }
-  @GetMapping("/all")
+  @GetMapping("/allcars")
   public ResponseEntity<Page<Car>> getAllCars(@RequestHeader(name = "role") String role,
                                                @RequestHeader(name = "id") String myId,
                                                @SortDefault.SortDefaults({
@@ -96,7 +96,7 @@ public class CarServerController {
                                                }) Pageable pageable) throws Exception {
     if(!role.equalsIgnoreCase("ROLE_customer") ) {
       ObjectId userIdInt = new ObjectId(myId);
-      Page<Car> cars = carServices.getAllCars();
+      Page<Car> cars = carServices.getAllCars(pageable);
       if (cars != null) {
         return ResponseEntity.ok().body(cars);
       } else {

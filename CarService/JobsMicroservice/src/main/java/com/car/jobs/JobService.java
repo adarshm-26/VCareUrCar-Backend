@@ -1,6 +1,8 @@
 package com.car.jobs;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.car.jobs.emailservice.EmailService;
+import com.car.jobs.emailservice.MailRequest;
+import com.car.jobs.emailservice.MailResponse;
 import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
@@ -22,11 +24,14 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 import java.security.SignatureException;
-import java.util.Date;
-import java.util.Properties;
+import java.util.*;
 
 @Service
 public class JobService {
+	@Autowired
+	private EmailService emailService;
+	@Autowired
+	private UserRepository userRepository;
 	@Autowired
 	private JobRepository jobrepo;
 	@Autowired
@@ -51,6 +56,8 @@ public class JobService {
 	}
 
 	public Job updateJobForScheduling(Job job) {
+		MailResponse mailResponse =sendSheduleMail(job);
+		logger.info("message status {}", mailResponse.isStatus());
 		Query query = new Query();
 		query.addCriteria(Criteria.where("id").is(job.getId()));
 		Update update = new Update();
@@ -75,8 +82,12 @@ public class JobService {
 	}
 
 	public Job updateJobForVerification(Job job){
-		if (job.getServices().stream().allMatch(service -> service.getVerifiedDate() != null))
+		if (job.getServices().stream().allMatch(service -> service.getVerifiedDate() != null)) {
 			job.setStatus("VERIFIED");
+			MailResponse mailResponse = sendVerifyMail(job);
+			logger.info("message status {}", mailResponse.isStatus());
+			
+		}
 		Query query = new Query();
 		query.addCriteria(Criteria.where("id").is(job.getId()));
 		Update update = new Update();
@@ -179,5 +190,52 @@ public class JobService {
 		} catch (Exception e) {
 			throw new SignatureException("Failed to generate HMAC : " + e.getMessage());
 		}
+	}
+
+	public MailResponse sendSheduleMail(Job job){
+		
+		Optional<User> user=userRepository.findById(job.getCustomerId());
+		logger.info("user id {}", user);
+		try{
+		if(user.isPresent()){
+			Map<String, Object> model = new HashMap<>();
+			MailRequest mailRequest = new MailRequest();
+			mailRequest.setName("vcareurcar");
+			mailRequest.setFrom("vacareurcar@gmail.com");
+			mailRequest.setSubject("your service is scheduled");
+			mailRequest.setTo(user.get().getEmail());
+			model.put("Name", mailRequest.getName());
+			model.put("todaydate",""+job.getAcceptedDate());
+			model.put("deadlinedate",""+job.getDeadlineDate());
+			model.put("userName",""+user.get().getName());
+			model.put("location", "team vcareurcar");
+
+			MailResponse mailResponse = emailService.sendScheduleEmail(mailRequest,model);
+			if(mailResponse.isStatus()){
+				return mailResponse;
+			}
+
+		}}catch(Exception e){logger.info("exception {} ", e);}
+		return null;
+	}
+	public MailResponse sendVerifyMail(Job job){
+		Optional<User> user=userRepository.findById(job.getCustomerId());
+		if(user.isPresent()){
+			Map<String, Object> model = new HashMap<>();
+			MailRequest mailRequest = new MailRequest();
+			mailRequest.setName("vcareurcar");
+			mailRequest.setFrom("vacareurcar@gmail.com");
+			mailRequest.setSubject("your service is completed");
+			mailRequest.setTo(user.get().getEmail());
+			model.put("Name", mailRequest.getName());
+			model.put("todaydate",""+job.getDeadlineDate());
+			model.put("userName",""+user.get().getName());
+			model.put("location", "team vcareurcar");
+			MailResponse mailResponse = emailService.sendVerifyEmail(mailRequest,model);
+			if(mailResponse.isStatus()){
+				return mailResponse;
+			}
+		}
+		return null;
 	}
 }
