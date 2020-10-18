@@ -22,7 +22,7 @@
 							</div>
 							<div>
 								<br>
-								"Hello "${userName}<br>
+								 Hello "<b>${userName}</b>"<br>
 								 Thank you for choosing us :) <br>
 								 your appointment is scheduled on : ${todaydate}<br>
 								 it will be complete by : ${deadlinedate}
