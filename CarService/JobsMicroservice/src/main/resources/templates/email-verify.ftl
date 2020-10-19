@@ -25,7 +25,7 @@
 								 Hello "<b>${userName}</b>"<br>
 								 Thank you for choosing us :) <br>
 								 your car services completed on :${todaydate} <br>
-								 please kindly login and do payment
+								 Kindly login and complete payment
 								<br> <br> <b>${Name}</b><br>${location}<br>
 								<br>
 							</div>

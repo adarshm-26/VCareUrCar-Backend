@@ -121,14 +121,12 @@ public class UserServerController {
       } else {
         return ResponseEntity.unprocessableEntity().build();
       }
-    } else if (!role.equals("ROLE_customer")){
+    } else {
       ObjectId userObjId = new ObjectId(userId);
       User user = services.findUser(userObjId);
       Map<String,String> map = new HashMap<>();
       map.put("name", user.getName());
       return ResponseEntity.ok().body(map);
-    } else {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
   }
 

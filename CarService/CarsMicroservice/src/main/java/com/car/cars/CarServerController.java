@@ -8,6 +8,8 @@ import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 @RestController
@@ -20,7 +22,7 @@ public class CarServerController {
   }
 
   @GetMapping("/{carId}")
-  public ResponseEntity<Car> getCarDetails(@RequestHeader(name = "role") String role,
+  public ResponseEntity<?> getCarDetails(@RequestHeader(name = "role") String role,
                                            @RequestHeader(name = "id") String myId,
                                            @PathVariable("carId") String carId) throws Exception {
     Car car = carServices.getCarById(new ObjectId(carId));
@@ -32,7 +34,10 @@ public class CarServerController {
           return ResponseEntity.badRequest().build();
         }
     } else {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+      Map<String, String> body = new HashMap<>();
+      body.put("brand", car.getBrand());
+      body.put("model", car.getModel());
+      return ResponseEntity.ok().body(body);
     }
   }
 
